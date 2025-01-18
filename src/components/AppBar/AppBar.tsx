@@ -70,6 +70,7 @@ function ResponsiveAppBar() {
     switch (setting) {
       case "Profile":
         navigate("/profile");
+        handleCloseUserMenu();
         break;
       case "Logout":
         handleLogout();

@@ -1,15 +1,16 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import ProductCard from "./ProductCard/ProductCard.tsx";
 import "./HomePage.css";
-import products from "./ProductCard/testProducts.json";
-import { getPosts } from "../../services/posts-service.ts";
+import { getPosts, Post } from "../../services/posts-service.ts";
 
 const HomePage = () => {
+  const [products, setProducts] = useState<Post[]>([]);
+
   useEffect(() => {
     const fetchData = async () => {
       const { request } = getPosts();    // object returned from getPosts
-    const response = await request;    // now you're awaiting the actual promise
-    console.log(response.data);
+      const response = await request;    // now you're awaiting the actual promise
+      setProducts(response.data);
     }
     
     fetchData();

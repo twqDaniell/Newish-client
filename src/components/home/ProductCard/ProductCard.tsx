@@ -66,8 +66,8 @@ export default function ProductCard({ product }) {
             <MoreVertIcon />
           </IconButton>
         }
-        title={product.productName}
-        subheader={product.dateAdded}
+        title={product.title}
+        subheader={product.createdAt}
       />
       <CardMedia
         component="img"
@@ -77,7 +77,7 @@ export default function ProductCard({ product }) {
       />
       <CardContent>
         <Typography variant="body2" sx={{ color: 'text.secondary' }}>
-          {product.text}
+          {product.content}
         </Typography>
         <Typography variant="body2" sx={{ color: '#000000' }} className='price'>
           {product.price} $
