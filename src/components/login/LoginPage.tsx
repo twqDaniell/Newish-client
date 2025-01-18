@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import loginIllustration from "../assets/login_illustration.png";
@@ -6,8 +6,35 @@ import logo from "../../assets/logo.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Button, Box } from "@mui/material";
+import { authService } from "../../services/auth-service.ts";
+import { Snackbar, Alert } from "@mui/material";
 
 const LoginPage = () => {
+  const [email, setEmail] = React.useState("");
+  const [password, setPassword] = React.useState("");
+  const [snackbarOpen, setSnackbarOpen] = useState(false);
+  const [snackbarMessage, setSnackbarMessage] = useState("");
+  const navigate = useNavigate();
+
+  const handleLogin = async (event) => {
+    try {
+      event.preventDefault();
+      const response = await authService.login({ email, password });
+      console.log("Logged in:", response);
+      localStorage.setItem("accessToken", response.accessToken);
+      localStorage.setItem("refreshToken", response.refreshToken);
+      navigate("/home");
+    } catch (error) {
+      console.error("Login failed:", error.response.data);
+      setSnackbarMessage("Login failed: " + error.response.data);
+      setSnackbarOpen(true);
+    }
+  };
+
+  const handleSnackbarClose = () => {
+    setSnackbarOpen(false);
+  };
+
   return (
     <div className="login-page">
       {/* Left Section */}
@@ -30,16 +57,26 @@ const LoginPage = () => {
           </p>
 
           <label>Email</label>
-          <input type="email" placeholder="Enter your email address" />
+          <input
+            type="email"
+            placeholder="Enter your email address"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)} // Update email state
+          />
 
           <label>Password</label>
-          <input type="password" placeholder="Enter your password" />
+          <input
+            type="password"
+            placeholder="Enter your password"
+            value={password}
+            onChange={(e) => setPassword(e.target.value)} // Update password state
+          />
 
           <div className="forgotPassword">
             <a href="#">Forgot Password?</a>
           </div>
 
-          <button type="submit" className="login-button">
+          <button className="login-button" onClick={handleLogin}>
             Login
           </button>
 
@@ -85,6 +122,22 @@ const LoginPage = () => {
             </Button>
           </div>
         </form>
+
+        {/* Snackbar Component */}
+        <Snackbar
+          open={snackbarOpen}
+          autoHideDuration={4000} // Snackbar will auto-close in 4 seconds
+          onClose={handleSnackbarClose}
+          anchorOrigin={{ vertical: "top", horizontal: "right" }}
+        >
+          <Alert
+            onClose={handleSnackbarClose}
+            severity="error"
+            sx={{ width: "100%" }}
+          >
+            {snackbarMessage}
+          </Alert>
+        </Snackbar>
       </div>
     </div>
   );
