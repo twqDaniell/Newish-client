@@ -15,7 +15,7 @@ import CommentIcon from '@mui/icons-material/Comment';
 import ShareIcon from '@mui/icons-material/Share';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import MoreVertIcon from '@mui/icons-material/MoreVert';
-import loginIllustration from "../../assets/login_illustration.png";
+import loginIllustration from "../../../assets/login_illustration.png";
 import "./ProductCard.css";
 
 interface ExpandMoreProps extends IconButtonProps {

@@ -2,7 +2,7 @@ import React from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import loginIllustration from "../assets/login_illustration.png";
-import logo from "../assets/logo.png";
+import logo from "../../assets/logo.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
 import { Button, Box } from "@mui/material";
