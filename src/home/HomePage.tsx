@@ -1,10 +1,14 @@
 import React from "react";
+import ProductCard from "./ProductCard/ProductCard.tsx";
+import "./HomePage.css";
+import products from "./ProductCard/testProducts.json";
 
 const HomePage = () => {
   return (
-    <div >
-      <h1>Home Page</h1>
-      <p>Welcome to the home page.</p>
+    <div className="container">
+        {products.map((product, index) => (
+            <ProductCard key={index} product={product} />
+        ))}
     </div>
   );
 };

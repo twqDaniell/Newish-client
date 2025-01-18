@@ -1,0 +1,10 @@
+.likeConunt {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 5px;
+}
+
+.price {
+    margin-top: 5px;
+}
