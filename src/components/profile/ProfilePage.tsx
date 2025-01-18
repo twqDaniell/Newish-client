@@ -1,6 +1,6 @@
 import React from "react";
 import "./ProfilePage.css";
-import loginIllustration from "../assets/login_illustration.png";
+import loginIllustration from "../../assets/login_illustration.png";
 
 const ProfilePage = () => {
   return (

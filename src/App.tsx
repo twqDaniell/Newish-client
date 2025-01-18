@@ -1,9 +1,9 @@
 import React from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import LoginPage from "./login/LoginPage.tsx";
-import HomePage from "./home/HomePage.tsx";
-import AppBar from "./AppBar/AppBar.tsx";
-import ProfilePage from "./profile/ProfilePage.tsx";
+import LoginPage from "./components/login/LoginPage.tsx";
+import HomePage from "./components/home/HomePage.tsx";
+import AppBar from "./components/AppBar/AppBar.tsx";
+import ProfilePage from "./components/profile/ProfilePage.tsx";
 import "./App.css";
 
 const App: React.FC = () => {
