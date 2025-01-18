@@ -4,11 +4,21 @@ export interface LoginResponse {
   accessToken: string;
   refreshToken: string;
   _id: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
+  profilePicture: string;
 }
-
 export interface LoginRequest {
   email: string;
   password: string;
+}
+export interface RegisterRequest {
+  username: string;
+  email: string;
+  password: string;
+  phoneNumber: string;
+  profilePicture?: string;
 }
 
 export const authService = {
@@ -22,5 +32,21 @@ export const authService = {
   logout: async (refreshToken: string) => {
     const response = await apiClient.post("/auth/logout", { refreshToken });
     return response.data;
+  },
+
+  // Register a user
+  register: async (formData: FormData) => {
+    const response = await apiClient.post("/auth/register", formData, {
+      headers: {
+        "Content-Type": "multipart/form-data", // Inform the server about the form-data format
+      },
+    });
+    return response.data;
+  },
+
+  // Check if the user is authenticated (token-based check)
+  isAuthenticated: (): boolean => {
+    const accessToken = localStorage.getItem("accessToken");
+    return !!accessToken; // Returns true if accessToken exists
   },
 };
