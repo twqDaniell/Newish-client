@@ -52,7 +52,7 @@ const LoginPage = () => {
       <div className="right-section">
         <form className="login-form">
           <h2>Sign In</h2>
-          <p>
+          <p onClick={() => navigate('/register')}>
             If you don’t have an account, <a href="#">Register here!</a>
           </p>
 

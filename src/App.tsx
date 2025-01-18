@@ -5,6 +5,7 @@ import HomePage from "./components/home/HomePage.tsx";
 import AppBar from "./components/AppBar/AppBar.tsx";
 import ProfilePage from "./components/profile/ProfilePage.tsx";
 import "./App.css";
+import RegisterPage from "./components/register/RegisterPage.tsx";
 
 const App: React.FC = () => {
   return (
@@ -12,6 +13,7 @@ const App: React.FC = () => {
       <Routes>
         {/* Login at "/" */}
         <Route path="/" element={<LoginPage />} />
+        <Route path="/register" element={<RegisterPage />} />
 
         {/* Everything else uses AppBar */}
         <Route
