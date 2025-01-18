@@ -3,6 +3,7 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import LoginPage from "./login/LoginPage.tsx";
 import HomePage from "./home/HomePage.tsx";
 import AppBar from "./AppBar/AppBar.tsx";
+import ProfilePage from "./profile/ProfilePage.tsx";
 import "./App.css";
 
 const App: React.FC = () => {
@@ -22,7 +23,7 @@ const App: React.FC = () => {
                 {/* Match /home */}
                 <Route path="home" element={<HomePage />} />
                 {/* Future: match /profile */}
-                {/* <Route path="profile" element={<Profile />} /> */}
+                <Route path="profile" element={<ProfilePage />} />
               </Routes>
             </>
           }
