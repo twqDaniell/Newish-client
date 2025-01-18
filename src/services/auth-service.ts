@@ -17,4 +17,10 @@ export const authService = {
     const response = await apiClient.post<LoginResponse>("/auth/login", data);
     return response.data;
   },
+
+  // Logout a user
+  logout: async (refreshToken: string) => {
+    const response = await apiClient.post("/auth/logout", { refreshToken });
+    return response.data;
+  },
 };

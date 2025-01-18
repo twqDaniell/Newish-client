@@ -14,9 +14,10 @@ import MenuItem from "@mui/material/MenuItem";
 import AdbIcon from "@mui/icons-material/Adb";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
+import { authService } from "../../services/auth-service.ts";
 
 const pages = ["Home", "Profile"];
-const settings = ["Profile", "Account", "Dashboard", "Logout"];
+const settings = ["Profile", "Logout"];
 
 function ResponsiveAppBar() {
   const navigate = useNavigate();
@@ -41,6 +42,42 @@ function ResponsiveAppBar() {
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
+  };
+
+  const handleLogout = async () => {
+    const refreshToken = localStorage.getItem("refreshToken");
+
+    if (!refreshToken) {
+      console.error("No refresh token found.");
+      return;
+    }
+
+    try {
+      await authService.logout(refreshToken); // Call the logout API
+      // Clear tokens from localStorage
+      localStorage.removeItem("accessToken");
+      localStorage.removeItem("refreshToken");
+      console.log("Logged out successfully.");
+
+      // Navigate back to the login page
+      navigate("/");
+    } catch (error) {
+      console.error("Failed to logout:", error);
+    }
+  };
+
+  const handleSetting = (setting: string) => () => {
+    switch (setting) {
+      case "Profile":
+        navigate("/profile");
+        break;
+      case "Logout":
+        handleLogout();
+        navigate("/");
+        break;
+      default:
+        break;
+    }
   };
 
   return (
@@ -146,7 +183,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseUserMenu}
             >
               {settings.map((setting) => (
-                <MenuItem key={setting} onClick={handleCloseUserMenu}>
+                <MenuItem key={setting} onClick={handleSetting(setting)}>
                   <Typography sx={{ textAlign: "center" }}>
                     {setting}
                   </Typography>
