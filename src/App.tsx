@@ -1,6 +1,7 @@
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
-import LoginPage from './LoginPage';
+import LoginPage from './login/LoginPage.tsx';
+import './App.css';
 
 const App: React.FC = () => {
   return (
