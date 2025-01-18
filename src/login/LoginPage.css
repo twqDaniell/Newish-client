@@ -1,7 +1,7 @@
 /* General Styles */
 body {
     margin: 0;
-    font-family: Arial, sans-serif;
+    font-family: 'Nunito', sans-serif !important;
   }
   
   .login-page {
@@ -37,6 +37,7 @@ body {
     display: flex;
     flex-direction: column;
     justify-content: center;
+    align-items: center;
   }
   
   .login-form {
@@ -80,35 +81,34 @@ body {
   }
   
   .login-button {
-    background-color: #EE297B;
-    color: white;
+    background-color: #EE297B !important;
+    color: white !important;
     border: none;
+    margin-top: 10px;
     padding: 10px 15px;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
-    width: 100%;
+    width: 30%;
   }
   
   .login-button:hover {
-    background-color: #e64423;
+    background-color: #f285b2 !important;
+  }
+
+  .forgotPassword {
+    font-size: 14px;
+    margin-top: 10px;
   }
   
   .social-buttons {
     display: flex;
-    justify-content: space-between;
+    justify-content: start;
     margin-top: 20px;
   }
   
   .social-btn {
-    background-color: #f5f5f5;
-    border: 1px solid #ccc;
-    padding: 10px 15px;
-    border-radius: 4px;
-    flex: 1;
-    margin: 0 5px;
-    text-align: center;
-    cursor: pointer;
+    margin-right: 10px;
   }
   
   .social-btn:hover {
