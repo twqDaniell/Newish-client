@@ -37,7 +37,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
       formData.append("newPrice", newPrice);
       formData.append("city", city);
       formData.append("timesWorn", timesWorn);
-      formData.append("sender", user.id); // Hardcoded sender ID
+      formData.append("sender", user.id); 
   
       console.log('sss');
       if (picture) {

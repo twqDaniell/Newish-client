@@ -15,11 +15,13 @@ import AdbIcon from "@mui/icons-material/Adb";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth-service.ts";
+import { useAppContext } from "../../contexts/AppContext.ts";
 
-const pages = ["Home", "Profile"];
+const pages = ["Buy", "Sell", "Profile"];
 const settings = ["Profile", "Logout"];
 
 function ResponsiveAppBar() {
+  const { buyOrSell, setBuyOrSell } = useAppContext();
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -43,6 +45,16 @@ function ResponsiveAppBar() {
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
+
+  const handlePageClick = (page: string) => {
+    if (page === "Profile") {
+      navigate("/profile");
+      return;
+    } else {
+      navigate("/home");
+      setBuyOrSell(page.toLowerCase());
+    }
+  }
 
   const handleLogout = async () => {
     const refreshToken = localStorage.getItem("refreshToken");
@@ -136,8 +148,8 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => navigate(`/${page.toLowerCase()}`)}
-                sx={{ my: 2, color: "#EE297B", display: "block", textTransform: "none" }}
+                onClick={() => { handlePageClick(page) }}
+                sx={{ my: 2, color: "#EE297B", display: "block", textTransform: "none", fontSize: "16px" }}
               >
                 {page}
               </Button>

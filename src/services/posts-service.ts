@@ -2,11 +2,17 @@ import apiClient, { CanceledError } from "./api-client.ts";
 
 export { CanceledError };
 
+class Sender {
+  _id: string;
+  username: string;
+  profilePicture: string;
+}
+
 export interface Post {
   _id: string;
   title: string;
   content: string;
-  sender: string;
+  sender: Sender;
   oldPrice: string;
   newPrice: string;
   city: string;

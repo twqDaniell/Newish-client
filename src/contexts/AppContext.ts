@@ -14,6 +14,8 @@ interface AppContextInterface {
   setSnackbar: React.Dispatch<React.SetStateAction<Snackbar>>;
   loadingUser: boolean;
   setLoadingUser: React.Dispatch<React.SetStateAction<boolean>>;
+  buyOrSell: string;
+  setBuyOrSell: React.Dispatch<React.SetStateAction<string>>;
 }
 
 // Define the user type
@@ -57,6 +59,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     message: "",
   });
   const [loadingUser, setLoadingUser] = useState(true);
+  const [buyOrSell, setBuyOrSell] = useState("buy");
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -80,7 +83,9 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     snackbar,
     setSnackbar,
     loadingUser,
-    setLoadingUser
+    setLoadingUser,
+    buyOrSell,
+    setBuyOrSell
   };
 
   return React.createElement(AppContext.Provider, { value }, children);
