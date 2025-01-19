@@ -65,6 +65,7 @@ function ResponsiveAppBar() {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       setUser(null);
+      setBuyOrSell("buy");
 
       // Navigate back to login
       navigate("/");

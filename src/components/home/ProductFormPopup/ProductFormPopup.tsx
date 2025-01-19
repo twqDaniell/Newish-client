@@ -65,7 +65,8 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
   
       // Call createPost with FormData
       const newPost = await createPost(formData);
-        setPosts([...posts, newPost.data]);
+      setPosts((prevPosts) => [...prevPosts, { ...newPost.data, sender: { _id: user.id, username: user.name, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber } }]);
+
       onClose();
       setSnackbar({ open: true, message: "Post created successfully", type: "success" });
     } catch (err) {
