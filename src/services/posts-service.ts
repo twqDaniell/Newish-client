@@ -6,6 +6,7 @@ class Sender {
   _id: string;
   username: string;
   profilePicture: string;
+  phoneNumber: string;
 }
 
 export interface Post {
@@ -19,6 +20,7 @@ export interface Post {
   picture: string;
   likes: string[];
   timesWorn: string;
+  createdAt: string;
 }
 
 export const getPosts = () => {

@@ -29,6 +29,7 @@ import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import Box from "@mui/material/Box";
 import ProductFormPopup from "../ProductFormPopup/ProductFormPopup.tsx";
 import ImageModal from "../ImageModal/ImageModal.tsx";
+import CommentsModal from "../CommentsModal/CommentsModal.tsx";
 
 export default function ProductCard({ product }) {
   const { user, buyOrSell, setSnackbar } = useAppContext();
@@ -37,6 +38,7 @@ export default function ProductCard({ product }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [commentsOpen, setCommentsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
 
   const formatDate = (dateTime) => {
@@ -255,9 +257,9 @@ export default function ProductCard({ product }) {
           </div>
           <div className="likeConunt">
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
-              {product.comments?.length}
+              {product.commentCount}
             </Typography>
-            <IconButton aria-label="add to favorites">
+            <IconButton aria-label="add to favorites" onClick={() => setCommentsOpen(true)}>
               <CommentIcon />
             </IconButton>
           </div>
@@ -305,6 +307,8 @@ export default function ProductCard({ product }) {
       ></ImageModal>
       
       <ProductFormPopup open={editOpen} onClose={handleEditClose} isEdit={true} postToEdit={product}></ProductFormPopup>
+
+      <CommentsModal open={commentsOpen} onClose={() => setCommentsOpen(false)} post={product}></CommentsModal>
     </div>
   );
 }

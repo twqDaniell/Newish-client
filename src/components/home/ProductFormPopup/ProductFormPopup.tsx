@@ -93,7 +93,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
           const index = prevPosts.findIndex(post => post._id === postToEdit._id);
           const newPosts = [...prevPosts];
           newPosts[index] = newPost.data;
-          newPosts[index].sender = { _id: user.id, username: user.name, profilePicture: user.profilePicture };
+          newPosts[index].sender = { _id: user.id, username: user.name, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber };
           return newPosts;
         }
       )
