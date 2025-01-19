@@ -6,13 +6,22 @@ import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import NewProductPopup from "./NewProduct/NewProductPopup.tsx";
 import { usePostContext } from "../../contexts/PostsContext.ts";
+import { useNavigate } from "react-router-dom";
+import { useAppContext } from "../../contexts/AppContext.ts";
 
 const HomePage = () => {
   // const [products, setProducts] = useState<Post[]>([]);
   const { posts, setPosts } = usePostContext();
   const [popupOpen, setPopupOpen] = useState(false);
+  const { user } = useAppContext();
+  const navigate = useNavigate();
 
   useEffect(() => {
+    if(!user) {
+      navigate("/");
+      return;
+    }
+
     const fetchData = async () => {
       const { request } = getPosts(); // object returned from getPosts
       const response = await request; // now you're awaiting the actual promise

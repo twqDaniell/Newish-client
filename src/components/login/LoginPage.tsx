@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { use, useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import loginIllustration from "../assets/login_illustration.png";
@@ -14,8 +14,14 @@ const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
   const { snackbar, setSnackbar } = useAppContext();
-  const { user, setUser } = useAppContext();
+  const { user, setUser, loadingUser } = useAppContext();
   const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loadingUser && user) {
+      navigate("/home");
+    }
+  } , [loadingUser]);
 
   const handleLogin = async (event) => {
     try {

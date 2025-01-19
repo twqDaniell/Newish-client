@@ -1,11 +1,19 @@
-import React, { createContext, useState, useContext, ReactNode } from "react";
+import React, {
+  createContext,
+  useState,
+  useContext,
+  ReactNode,
+  useEffect,
+} from "react";
 
 // Define the context interface
 interface AppContextInterface {
   user: User | null;
   setUser: React.Dispatch<React.SetStateAction<User | null>>;
-    snackbar: Snackbar | null;
-    setSnackbar: React.Dispatch<React.SetStateAction<Snackbar>>;
+  snackbar: Snackbar | null;
+  setSnackbar: React.Dispatch<React.SetStateAction<Snackbar>>;
+  loadingUser: boolean;
+  setLoadingUser: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Define the user type
@@ -18,9 +26,9 @@ export interface User {
 }
 
 interface Snackbar {
-    open: boolean;
-    type: "success" | "error";
-    message: string;
+  open: boolean;
+  type: "success" | "error";
+  message: string;
 }
 
 // Create the context with a default value of undefined
@@ -43,16 +51,39 @@ interface AppProviderProps {
 // Create the provider component
 const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [user, setUser] = useState<User | null>(null);
-  const [snackbar, setSnackbar] = useState<Snackbar>({ open: false, type: "success", message: "" });
+  const [snackbar, setSnackbar] = useState<Snackbar>({
+    open: false,
+    type: "success",
+    message: "",
+  });
+  const [loadingUser, setLoadingUser] = useState(true);
+
+  useEffect(() => {
+    const storedUser = localStorage.getItem("user");
+    if (storedUser) {
+      setUser(JSON.parse(storedUser));
+    }
+    setLoadingUser(false);
+  }, []);
+
+  useEffect(() => {
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
+    }
+  }, [user]);
 
   const value: AppContextInterface = {
     user,
     setUser,
     snackbar,
     setSnackbar,
+    loadingUser,
+    setLoadingUser
   };
 
   return React.createElement(AppContext.Provider, { value }, children);
 };
-  
+
 export default AppProvider;

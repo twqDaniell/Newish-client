@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import logo from "../../assets/logo.png";
@@ -15,8 +15,14 @@ const RegisterPage = () => {
     const [phoneNumber, setPhoneNumber] = useState("");
     const [profilePicture, setProfilePicture] = useState<File | null>(null); // Store the file
     const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
-    const { snackbar, setSnackbar } = useAppContext();
+    const { snackbar, setSnackbar, user, loadingUser } = useAppContext();
     const navigate = useNavigate();
+
+    useEffect(() => {
+      if (!loadingUser && user) {
+        navigate("/home");
+      }
+    } , [loadingUser]);
   
     const handleSnackbarClose = () => {
       setSnackbar({ ...snackbar, open: false });

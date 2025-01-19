@@ -74,6 +74,7 @@ function ResponsiveAppBar() {
         break;
       case "Logout":
         handleLogout();
+        localStorage.removeItem("user");
         navigate("/");
         break;
       default:
