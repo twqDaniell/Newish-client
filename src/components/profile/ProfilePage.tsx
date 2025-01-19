@@ -53,7 +53,7 @@ const ProfilePage = () => {
           </div>
           <div className="detailRow">
             <CheckIcon sx={{ width: "20px", color: "#EE297B" }}></CheckIcon>
-            <div className="detail">5 products sold</div>
+            <div className="detail">{user.soldCount} products sold</div>
           </div>
           <div className="detailRow">
             <LikeIcon sx={{ width: "20px", color: "#EE297B" }}></LikeIcon>
