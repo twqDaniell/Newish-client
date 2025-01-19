@@ -172,7 +172,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
             </label>
 
             <label>
-              City
+              Pickup City
               <input
                 type="text"
                 value={city}

@@ -158,7 +158,7 @@ export default function ProductCard({ product }) {
             )
           }
           title={product.title}
-          subheader={formatDate(product.createdAt)}
+          subheader={<>{product.sender.username} - {product.sender.phoneNumber}<br />{formatDate(product.createdAt)}</>}
         />
         <div
           onClick={() => setPhotoModalOpen(true)}

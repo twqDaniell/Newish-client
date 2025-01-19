@@ -21,7 +21,7 @@ const pages = ["Buy", "Sell", "Profile"];
 const settings = ["Profile", "Logout"];
 
 function ResponsiveAppBar() {
-  const { buyOrSell, setBuyOrSell, setUser } = useAppContext();
+  const { buyOrSell, setBuyOrSell, setUser, user } = useAppContext();
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -38,9 +38,7 @@ function ResponsiveAppBar() {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
-    
-  };
+  const handleCloseNavMenu = () => {};
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
@@ -54,27 +52,26 @@ function ResponsiveAppBar() {
       navigate("/home");
       setBuyOrSell(page.toLowerCase());
     }
-  }
+  };
 
   const handleLogout = async () => {
     try {
       const refreshToken = localStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("No refresh token found");
-  
+
       await authService.logout(refreshToken);
-  
+
       // Clear user state and tokens
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       setUser(null);
-  
+
       // Navigate back to login
       navigate("/");
     } catch (error) {
       console.error("Failed to logout:", error.message || error);
     }
   };
-  
 
   const handleSetting = (setting: string) => () => {
     switch (setting) {
@@ -97,7 +94,9 @@ function ResponsiveAppBar() {
       position="static"
       sx={{ backgroundColor: "#F3E3E4", position: "fixed", zIndex: "100" }}
     >
-      <div style={{ marginLeft: "15px", marginRight: "15px", maxWidth: "100%" }}>
+      <div
+        style={{ marginLeft: "15px", marginRight: "15px", maxWidth: "100%" }}
+      >
         <Toolbar disableGutters>
           <img
             src={logo} // Replace with your illustration URL
@@ -146,19 +145,46 @@ function ResponsiveAppBar() {
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => { handlePageClick(page) }}
-                sx={{ my: 2, color: "#EE297B", display: "block", textTransform: "none", fontSize: "16px" }}
+                onClick={() => {
+                  handlePageClick(page);
+                }}
+                sx={{
+                  my: 2,
+                  color: "#EE297B",
+                  display: "block",
+                  textTransform: "none",
+                  fontSize: "16px",
+                }}
               >
                 {page}
               </Button>
             ))}
           </Box>
-          <Box sx={{ flexGrow: 0 }}>
-            <Tooltip title="Open settings">
-              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                <Avatar alt="Remy Sharp" src="/static/images/avatar/2.jpg" />
-              </IconButton>
-            </Tooltip>
+          <Box
+            sx={{
+              flexGrow: 0,
+              direction: "flex",
+              flexDirection: "row",
+              marginTop: "5px",
+            }}
+          >
+            <div className="profileBar">
+              <Tooltip title="Open settings">
+                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                  <Avatar
+                    src={`http://localhost:3002/${user?.profilePicture.replace(
+                      /\\/g,
+                      "/"
+                    )}`}
+                  />
+                </IconButton>
+              </Tooltip>
+              <Typography
+                sx={{ color: "#EE297B", display: { xs: "none", md: "block" } }}
+              >
+                {user?.name}
+              </Typography>
+            </div>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
