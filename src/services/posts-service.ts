@@ -18,6 +18,7 @@ export interface Post {
   city: string;
   picture: string;
   likes: string[];
+  timesWorn: string;
 }
 
 export const getPosts = () => {

@@ -4,7 +4,7 @@ import "./HomePage.css";
 import { getPosts, Post } from "../../services/posts-service.ts";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
-import NewProductPopup from "./NewProduct/NewProductPopup.tsx";
+import NewProductPopup from "./ProductFormPopup/ProductFormPopup.tsx";
 import { usePostContext } from "../../contexts/PostsContext.ts";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext.ts";
@@ -34,7 +34,7 @@ const HomePage = () => {
 
   useEffect(() => {
     if(!user) return;
-    
+
     if (buyOrSell == "buy") {
       setFilteredPosts(posts.filter((post) => post.sender._id !== user.id));
     } else {
@@ -73,7 +73,7 @@ const HomePage = () => {
         </Fab>
       )}
 
-      <NewProductPopup open={popupOpen} onClose={handleClosePopup} />
+      <NewProductPopup open={popupOpen} onClose={handleClosePopup} isEdit={false} postToEdit={null}/>
     </div>
   );
 };

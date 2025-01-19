@@ -1,12 +1,13 @@
-import React, { useState } from "react";
-import "./NewProductPopup.css"; // Link the updated CSS
+import React, { useEffect, useState } from "react";
+import "./ProductFormPopup.css"; // Link the updated CSS
 import { createPost } from "../../../services/posts-service.ts";
 import { useAppContext } from "../../../contexts/AppContext.ts";
 import { usePostContext } from "../../../contexts/PostsContext.ts";
+import { Post } from "../../../services/posts-service.ts";
 
-const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
-    const { posts, setPosts } = usePostContext();
-    const { setSnackbar, user } = useAppContext();
+const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean; onClose: () => void, isEdit: boolean, postToEdit: Post }) => {
+  const { posts, setPosts } = usePostContext();
+  const { setSnackbar, user } = useAppContext();
   const [picture, setPicture] = useState<File | null>(null);
   const [picturePreview, setPicturePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -15,6 +16,29 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
   const [newPrice, setNewPrice] = useState("");
   const [description, setDescription] = useState("");
   const [timesWorn, setTimesWorn] = useState("0");
+
+  useEffect(() => {
+    if (isEdit) {
+        setName(postToEdit.title);
+        setCity(postToEdit.city);
+        setOriginalPrice(postToEdit.oldPrice);
+        setNewPrice(postToEdit.newPrice);
+        setDescription(postToEdit.content);
+        setTimesWorn(postToEdit.timesWorn);
+        setPicturePreview(`http://localhost:3002/${postToEdit.picture.replace(/\\/g,"/")}`);
+        console.log(postToEdit.timesWorn);
+        
+    } else {
+      setName("");
+      setCity("");
+      setOriginalPrice("");
+      setNewPrice("");
+      setDescription("");
+      setTimesWorn("0");
+      setPicture(null);
+      setPicturePreview(null);
+    }
+  }, []);
 
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -39,7 +63,6 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
       formData.append("timesWorn", timesWorn);
       formData.append("sender", user.id); 
   
-      console.log('sss');
       if (picture) {
         formData.append("picture", picture); // Append the file
       }
@@ -62,7 +85,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
         <button className="popup-close-button" onClick={onClose}>
           &times;
         </button>
-        <h2 className="popup-title">Add New Product</h2>
+        <h2 className="popup-title">{isEdit ? "Edit Product" : "Add new product"}</h2>
         <form className="popup-form" onSubmit={handleSubmit}>
           {/* Left Side - Picture Upload */}
           <div className="popup-left">
@@ -138,7 +161,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
                   <input
                     type="radio"
                     value="0"
-                    checked={timesWorn === "0"}
+                    checked={timesWorn == "0"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   0 (Brand New)
@@ -147,7 +170,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
                   <input
                     type="radio"
                     value="1"
-                    checked={timesWorn === "1"}
+                    checked={timesWorn == "1"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   1
@@ -156,7 +179,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
                   <input
                     type="radio"
                     value="2"
-                    checked={timesWorn === "2"}
+                    checked={timesWorn == "2"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   2
@@ -180,4 +203,4 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
   );
 };
 
-export default NewProductPopup;
+export default ProductFormPopup;

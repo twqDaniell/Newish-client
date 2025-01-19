@@ -27,6 +27,7 @@ import ConfirmationPopup from "../../ConfirmationPopup/ConfirmationPopup.tsx";
 import { deletePost } from "../../../services/posts-service.ts";
 import ZoomInIcon from "@mui/icons-material/ZoomIn";
 import Box from "@mui/material/Box";
+import ProductFormPopup from "../ProductFormPopup/ProductFormPopup.tsx";
 import ImageModal from "../ImageModal/ImageModal.tsx";
 
 export default function ProductCard({ product }) {
@@ -36,6 +37,7 @@ export default function ProductCard({ product }) {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
+  const [editOpen, setEditOpen] = useState(false);
 
   const formatDate = (dateTime) => {
     const date = new Date(dateTime);
@@ -93,7 +95,7 @@ export default function ProductCard({ product }) {
   };
 
   const onEdit = () => {
-    console.log("Edit");
+    setEditOpen(true);
   };
 
   const onDelete = () => {
@@ -101,6 +103,8 @@ export default function ProductCard({ product }) {
   };
 
   const handleCloseImage = () => setPhotoModalOpen(false);
+
+  const handleEditClose = () => setEditOpen(false);
 
   const onConfirmDelete = async () => {
     try {
@@ -211,6 +215,9 @@ export default function ProductCard({ product }) {
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {product.content}
           </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Pick up from: {product.city}
+          </Typography>
           <div className="prices">
             <Typography
               variant="body2"
@@ -296,6 +303,8 @@ export default function ProductCard({ product }) {
         picture={`http://localhost:3002/${product.picture.replace(/\\/g,"/")}`}
         onClose={handleCloseImage}
       ></ImageModal>
+      
+      <ProductFormPopup open={editOpen} onClose={handleEditClose} isEdit={true} postToEdit={product}></ProductFormPopup>
     </div>
   );
 }
