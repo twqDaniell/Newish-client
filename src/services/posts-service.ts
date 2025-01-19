@@ -48,3 +48,13 @@ export const likePost = async (postId: string, userId: string) => {
   });
 };
 
+export const deletePost = async (postId: string) => {
+  const token = localStorage.getItem("accessToken");
+
+  return apiClient.delete(`/posts/${postId}`, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
+

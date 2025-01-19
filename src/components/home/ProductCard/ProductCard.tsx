@@ -24,9 +24,10 @@ import { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ConfirmationPopup from "../../ConfirmationPopup/ConfirmationPopup.tsx";
+import { deletePost } from "../../../services/posts-service.ts";
 
 export default function ProductCard({ product }) {
-  const { user, buyOrSell } = useAppContext();
+  const { user, buyOrSell, setSnackbar } = useAppContext();
   const { posts, setPosts } = usePostContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -94,8 +95,18 @@ export default function ProductCard({ product }) {
     setConfirmOpen(true);
   };
 
-  const onConfirmDelete = () => {
-    console.log("Confirm Delete");
+  const onConfirmDelete = async () => {
+    try {
+      await deletePost(product._id);
+      setPosts((prevPosts) =>
+        prevPosts.filter((post) => post._id !== product._id)
+      );
+
+      setSnackbar({ open: true, message: "Post deleted successfully", type: "success" });
+      setConfirmOpen(false);
+    } catch (error) {
+      setSnackbar({ open: true, message: "Failed to delete post", type: "error" });
+    }
   };
 
   return (
