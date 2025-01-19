@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from "react";
 import "./CommentsModal.css";
 import { Post } from "../../../services/posts-service.ts";
-import { createComment, getCommentsByPostId } from "../../../services/comments-service.ts";
+import {
+  createComment,
+  getCommentsByPostId,
+} from "../../../services/comments-service.ts";
 import { Comment } from "../../../services/comments-service.ts";
 import { useAppContext } from "../../../contexts/AppContext.ts";
+import { IconButton, Typography } from "@mui/material";
+import FavoriteIcon from "@mui/icons-material/Favorite";
+import { likePost } from "../../../services/posts-service.ts";
+import { usePostContext } from "../../../contexts/PostsContext.ts";
 
 interface CommentsModalProps {
   open: boolean;
@@ -19,6 +26,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const { setSnackbar, user } = useAppContext();
+  const { posts, setPosts } = usePostContext();
 
   useEffect(() => {
     if (open) {
@@ -63,6 +71,41 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
         type: "error",
         open: true,
       });
+    }
+  };
+
+  const handleLike = async (postId) => {
+    if (!user) {
+      alert("You need to be logged in to like a post.");
+      return;
+    }
+
+    try {
+      const response = await likePost(postId, user.id);
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            const hasLiked =
+              post.likes.findIndex((like) => like === user.id) !== -1;
+
+            if (hasLiked) {
+              return {
+                ...post,
+                likes: post.likes.filter((like) => like !== user.id),
+              };
+            } else {
+              return {
+                ...post,
+                likes: [...post.likes, user.id],
+              };
+            }
+          }
+
+          return post;
+        })
+      );
+    } catch (err) {
+      console.error("Error liking post:", err);
     }
   };
 
@@ -135,12 +178,30 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                 placeholder="Add a comment..."
                 className="comments-modal-comment-input"
               ></textarea>
-              <button
-                className="comments-modal-add-comment-button"
-                onClick={handleAddComment}
-              >
-                Post Comment
-              </button>
+              <div className="comments-modal-like-count">
+                <div className="likeConunt">
+                  <Typography variant="body2" sx={{ color: "text.secondary" }}>
+                    {post.likes?.length}
+                  </Typography>
+                  <IconButton
+                    aria-label="add to favorites"
+                    onClick={() => handleLike(post._id)}
+                  >
+                    {post.likes?.findIndex((like) => like == user.id) ==
+                    -1 ? (
+                      <FavoriteIcon />
+                    ) : (
+                      <FavoriteIcon style={{ color: "#EE297B" }} />
+                    )}
+                  </IconButton>
+                </div>
+                <button
+                  className="comments-modal-add-comment-button"
+                  onClick={handleAddComment}
+                >
+                  Post Comment
+                </button>
+              </div>
             </div>
           </div>
         </div>

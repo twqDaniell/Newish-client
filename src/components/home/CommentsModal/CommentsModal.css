@@ -194,3 +194,10 @@
     margin: 5px 0;
   }
   
+  .comments-modal-like-count {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-left: 5px;
+    justify-content: space-between;
+  }
