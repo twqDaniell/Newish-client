@@ -63,7 +63,7 @@ const HomePage = () => {
             right: "50px",
             width: "90px",
             height: "90px",
-            background: "#EE297B",
+            background: "#ED83B7",
             color: "white",
           }}
         >

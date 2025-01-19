@@ -17,6 +17,7 @@ export interface Post {
   newPrice: string;
   city: string;
   picture: string;
+  likes: string[];
 }
 
 export const getPosts = () => {
@@ -33,6 +34,16 @@ export const createPost = (formData: FormData) => {
     headers: {
       "Content-Type": "multipart/form-data", // Set the content type for file uploads
       Authorization: `Bearer ${token}`
+    },
+  });
+};
+
+export const likePost = async (postId: string, userId: string) => {
+  const token = localStorage.getItem("accessToken");
+
+  return apiClient.put(`/posts/${postId}/like`, { userId }, {
+    headers: {
+      Authorization: `Bearer ${token}`,
     },
   });
 };

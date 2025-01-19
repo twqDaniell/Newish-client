@@ -17,57 +17,103 @@ import ExpandMoreIcon from "@mui/icons-material/ExpandMore";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
 import loginIllustration from "../../../assets/login_illustration.png";
 import "./ProductCard.css";
-
-interface ExpandMoreProps extends IconButtonProps {
-  expand: boolean;
-}
-
-const ExpandMore = styled((props: ExpandMoreProps) => {
-  const { expand, ...other } = props;
-  return <IconButton {...other} />;
-})(({ theme }) => ({
-  marginLeft: "auto",
-  transition: theme.transitions.create("transform", {
-    duration: theme.transitions.duration.shortest,
-  }),
-  variants: [
-    {
-      props: ({ expand }) => !expand,
-      style: {
-        transform: "rotate(0deg)",
-      },
-    },
-    {
-      props: ({ expand }) => !!expand,
-      style: {
-        transform: "rotate(180deg)",
-      },
-    },
-  ],
-}));
+import { likePost } from "../../../services/posts-service.ts";
+import { useAppContext } from "../../../contexts/AppContext.ts";
+import { usePostContext } from "../../../contexts/PostsContext.ts";
+import { useState } from "react";
+import Menu from "@mui/material/Menu";
+import MenuItem from "@mui/material/MenuItem";
 
 export default function ProductCard({ product }) {
-  const [expanded, setExpanded] = React.useState(false);
+  const { user, buyOrSell } = useAppContext();
+  const { posts, setPosts } = usePostContext();
+  const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
 
-  const handleExpandClick = () => {
-    setExpanded(!expanded);
+  const formatDate = (dateTime) => {
+    const date = new Date(dateTime);
+
+    const day = String(date.getDate()).padStart(2, "0");
+    const month = String(date.getMonth() + 1).padStart(2, "0"); // Months are 0-indexed
+    const year = String(date.getFullYear()).slice(-2);
+    const hours = String(date.getHours()).padStart(2, "0");
+    const minutes = String(date.getMinutes()).padStart(2, "0");
+
+    return `${day}.${month}.${year} ${hours}:${minutes}`;
+  };
+
+  const handleLike = async (postId) => {
+    if (!user) {
+      alert("You need to be logged in to like a post.");
+      return;
+    }
+
+    try {
+      const response = await likePost(postId, user.id);
+      setPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            const hasLiked =
+              post.likes.findIndex((like) => like === user.id) !== -1;
+
+            if (hasLiked) {
+              return {
+                ...post,
+                likes: post.likes.filter((like) => like !== user.id),
+              };
+            } else {
+              return {
+                ...post,
+                likes: [...post.likes, user.id],
+              };
+            }
+          }
+
+          return post;
+        })
+      );
+    } catch (err) {
+      console.error("Error liking post:", err);
+    }
+  };
+
+  const handleOpenMenu = (event: React.MouseEvent<HTMLElement>) => {
+    setAnchorEl(event.currentTarget);
+  };
+
+  const handleCloseMenu = () => {
+    setAnchorEl(null);
+  };
+
+  const onEdit = () => {
+    console.log("Edit");
+  };
+
+  const onDelete = () => {
+    console.log("Delete");
   };
 
   return (
+    <div>
     <Card sx={{ maxWidth: 345, backgroundColor: "#fff9fa" }}>
       <CardHeader
         avatar={
           <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            R
+            <img
+              style={{ width: "40px", height: "40px" }}
+              src={`http://localhost:3002/${product.sender.profilePicture.replace(
+                /\\/g,
+                "/"
+              )}`}
+            ></img>
           </Avatar>
         }
-        action={
-          <IconButton aria-label="settings">
+        action={ buyOrSell === "sell" &&
+          <IconButton aria-label="settings" onClick={handleOpenMenu}>
             <MoreVertIcon />
           </IconButton>
         }
         title={product.title}
-        subheader={product.createdAt}
+        subheader={formatDate(product.createdAt)}
       />
       <CardMedia
         component="img"
@@ -79,27 +125,34 @@ export default function ProductCard({ product }) {
         <Typography variant="body2" sx={{ color: "text.secondary" }}>
           {product.content}
         </Typography>
-        <div>
-          <Typography variant="body2" sx={{ color: "red" }} className="price">
-            {product.oldPrice} $
+        <div className="prices">
+          <Typography variant="body2" sx={{ color: "#e05a5a", fontSize: "15px" }} className="price">
+            Original Price: <s style={{ fontWeight: "bold" }}>{product.oldPrice}$</s>
           </Typography>
-          <Typography variant="body2" sx={{ color: "green" }} className="price">
-            {product.newPrice} $
+          <Typography variant="body2" sx={{ color: "#6c945f", fontSize: "15px" }} className="price">
+            New Price: <a style={{ fontWeight: "bold" }}>{product.newPrice}$</a>
           </Typography>
         </div>
       </CardContent>
       <CardActions disableSpacing>
         <div className="likeConunt">
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {product.likes}
+            {product.likes?.length}
           </Typography>
-          <IconButton aria-label="add to favorites">
-            <FavoriteIcon />
+          <IconButton
+            aria-label="add to favorites"
+            onClick={() => handleLike(product._id)}
+          >
+            {product.likes?.findIndex((like) => like == user.id) == -1 ? (
+              <FavoriteIcon />
+            ) : (
+              <FavoriteIcon style={{ color: "#EE297B" }} />
+            )}
           </IconButton>
         </div>
         <div className="likeConunt">
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {product.comments}
+            {product.comments?.length}
           </Typography>
           <IconButton aria-label="add to favorites">
             <CommentIcon />
@@ -107,5 +160,30 @@ export default function ProductCard({ product }) {
         </div>
       </CardActions>
     </Card>
+
+     {/* Menu Component */}
+     <Menu
+        anchorEl={anchorEl}
+        open={Boolean(anchorEl)}
+        onClose={handleCloseMenu}
+      >
+        <MenuItem
+          onClick={() => {
+            handleCloseMenu();
+            onEdit();
+          }}
+        >
+          Edit
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleCloseMenu();
+            onDelete();
+          }}
+        >
+          Delete
+        </MenuItem>
+      </Menu>
+    </div>
   );
 }
