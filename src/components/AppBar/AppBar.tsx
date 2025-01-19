@@ -137,7 +137,7 @@ function ResponsiveAppBar() {
               <Button
                 key={page}
                 onClick={() => navigate(`/${page.toLowerCase()}`)}
-                sx={{ my: 2, color: "#EE297B", display: "block" }}
+                sx={{ my: 2, color: "#EE297B", display: "block", textTransform: "none" }}
               >
                 {page}
               </Button>
