@@ -5,16 +5,18 @@ import { getPosts, Post } from "../../services/posts-service.ts";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
 import NewProductPopup from "./NewProduct/NewProductPopup.tsx";
+import { usePostContext } from "../../contexts/PostsContext.ts";
 
 const HomePage = () => {
-  const [products, setProducts] = useState<Post[]>([]);
+  // const [products, setProducts] = useState<Post[]>([]);
+  const { posts, setPosts } = usePostContext();
   const [popupOpen, setPopupOpen] = useState(false);
 
   useEffect(() => {
     const fetchData = async () => {
       const { request } = getPosts(); // object returned from getPosts
       const response = await request; // now you're awaiting the actual promise
-      setProducts(response.data);
+      setPosts(response.data);
     };
 
     fetchData();
@@ -30,7 +32,7 @@ const HomePage = () => {
 
   return (
     <div className="container">
-      {products.map((product, index) => (
+      {posts.map((product, index) => (
         <ProductCard key={index} product={product} />
       ))}
       <Fab

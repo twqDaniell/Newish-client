@@ -1,10 +1,16 @@
 import React, { useState } from "react";
 import "./NewProductPopup.css"; // Link the updated CSS
+import { createPost } from "../../../services/posts-service.ts";
+import { useAppContext } from "../../../contexts/AppContext.ts";
+import { usePostContext } from "../../../contexts/PostsContext.ts";
 
 const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void }) => {
+    const { posts, setPosts } = usePostContext();
+    const { setSnackbar, user } = useAppContext();
   const [picture, setPicture] = useState<File | null>(null);
   const [picturePreview, setPicturePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
+  const [city, setCity] = useState("");
   const [originalPrice, setOriginalPrice] = useState("");
   const [newPrice, setNewPrice] = useState("");
   const [description, setDescription] = useState("");
@@ -18,21 +24,35 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
     }
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-
-    const formData = {
-      picture,
-      name,
-      originalPrice,
-      newPrice,
-      description,
-      timesWorn,
-    };
-
-    console.log("Form Submitted:", formData);
-    onClose();
-  };
+  
+    try {
+      // Prepare FormData
+      
+      const formData = new FormData();
+      formData.append("title", name);
+      formData.append("content", description);
+      formData.append("oldPrice", originalPrice);
+      formData.append("newPrice", newPrice);
+      formData.append("city", city);
+      formData.append("timesWorn", timesWorn);
+      formData.append("sender", user.id); // Hardcoded sender ID
+  
+      console.log('sss');
+      if (picture) {
+        formData.append("picture", picture); // Append the file
+      }
+  
+      // Call createPost with FormData
+      const newPost = await createPost(formData);
+        setPosts([...posts, newPost.data]);
+      onClose();
+      setSnackbar({ open: true, message: "Post created successfully", type: "success" });
+    } catch (err) {
+      setSnackbar({ open: true, message: "Failed to create post" + err, type: "error" });
+    }
+  };  
 
   if (!open) return null; // Don't render if the popup is closed
 
@@ -62,7 +82,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
           {/* Right Side - Form Fields */}
           <div className="popup-right">
             <label>
-              Name (Title)
+              Name
               <input
                 type="text"
                 value={name}
@@ -87,6 +107,16 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
                 type="number"
                 value={newPrice}
                 onChange={(e) => setNewPrice(e.target.value)}
+                required
+              />
+            </label>
+
+            <label>
+              City
+              <input
+                type="text"
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
                 required
               />
             </label>
@@ -129,7 +159,7 @@ const NewProductPopup = ({ open, onClose }: { open: boolean; onClose: () => void
                     checked={timesWorn === "2"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
-                  2+
+                  2
                 </label>
               </div>
             </label>
