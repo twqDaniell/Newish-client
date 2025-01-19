@@ -86,7 +86,7 @@ function ResponsiveAppBar() {
       position="static"
       sx={{ backgroundColor: "#F3E3E4", position: "fixed", zIndex: "100" }}
     >
-      <Container maxWidth="xl">
+      <div style={{ marginLeft: "15px", marginRight: "15px", maxWidth: "100%" }}>
         <Toolbar disableGutters>
           <img
             src={logo} // Replace with your illustration URL
@@ -131,25 +131,6 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
-          <AdbIcon sx={{ display: { xs: "flex", md: "none" }, mr: 1 }} />
-          <Typography
-            variant="h5"
-            noWrap
-            component="a"
-            href="#app-bar-with-responsive-menu"
-            sx={{
-              mr: 2,
-              display: { xs: "flex", md: "none" },
-              flexGrow: 1,
-              fontFamily: "monospace",
-              fontWeight: 700,
-              letterSpacing: ".3rem",
-              color: "inherit",
-              textDecoration: "none",
-            }}
-          >
-            LOGO
-          </Typography>
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
@@ -193,7 +174,7 @@ function ResponsiveAppBar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
+      </div>
     </AppBar>
   );
 }
