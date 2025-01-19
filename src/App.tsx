@@ -8,6 +8,8 @@ import RegisterPage from "./components/register/RegisterPage.tsx";
 import { Snackbar, Alert } from "@mui/material";
 import { useAppContext } from "./contexts/AppContext.ts";
 import PostProvider from "./contexts/PostsContext.ts";
+import { ThemeProvider } from "@mui/material/styles";
+import theme from "./theme.ts";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -24,7 +26,14 @@ const AppRoutes: React.FC = () => {
             <>
               <AppBar />
               <Routes>
-                <Route path="home" element={<PostProvider><HomePage /></PostProvider>} />
+                <Route
+                  path="home"
+                  element={
+                    <PostProvider>
+                      <HomePage />
+                    </PostProvider>
+                  }
+                />
                 <Route path="profile" element={<ProfilePage />} />
               </Routes>
             </>
@@ -39,7 +48,7 @@ const App: React.FC = () => {
   const { snackbar, setSnackbar } = useAppContext();
 
   return (
-    <>
+    <ThemeProvider theme={theme}>
       <AppRoutes />
 
       {/* Snackbar */}
@@ -57,7 +66,7 @@ const App: React.FC = () => {
           {snackbar.message}
         </Alert>
       </Snackbar>
-    </>
+    </ThemeProvider>
   );
 };
 
