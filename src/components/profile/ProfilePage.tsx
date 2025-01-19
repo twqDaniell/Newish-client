@@ -27,34 +27,42 @@ const ProfilePage = () => {
         ></img>
       </div>
       <div className="RightSide">
-        <h1>{user.name}</h1>
-        <div className="detailRow">
-          <EmailIcon sx={{ width: "20px", color: "#EE297B" }}></EmailIcon>
-          <div className="detail">{user.email}</div>
+        <div className="details">
+          <h1>{user.name}</h1>
+          <div className="detailRow">
+            <EmailIcon sx={{ width: "20px", color: "#EE297B" }}></EmailIcon>
+            <div className="detail">{user.email}</div>
+          </div>
+          <div className="detailRow">
+            <PhoneIcon sx={{ width: "20px", color: "#EE297B" }}></PhoneIcon>
+            <div className="detail">{user.phoneNumber}</div>
+          </div>
+          <div className="detailRow">
+            <PostsIcon sx={{ width: "20px", color: "#EE297B" }}></PostsIcon>
+            <div className="detail">4 products up right now</div>
+          </div>
+          <div className="detailRow">
+            <CheckIcon sx={{ width: "20px", color: "#EE297B" }}></CheckIcon>
+            <div className="detail">5 products sold</div>
+          </div>
+          <div className="detailRow">
+            <LikeIcon sx={{ width: "20px", color: "#EE297B" }}></LikeIcon>
+            <div className="detail">55 likes earned</div>
+          </div>
+          <Button
+            className="editProfileButton"
+            onClick={() => setOpenEditPopup(true)}
+          >
+            <EditIcon></EditIcon>
+            Edit Profile
+          </Button>
         </div>
-        <div className="detailRow">
-          <PhoneIcon sx={{ width: "20px", color: "#EE297B" }}></PhoneIcon>
-          <div className="detail">{user.phoneNumber}</div>
-        </div>
-        <div className="detailRow">
-          <PostsIcon sx={{ width: "20px", color: "#EE297B" }}></PostsIcon>
-          <div className="detail">4 products up right now</div>
-        </div>
-        <div className="detailRow">
-          <CheckIcon sx={{ width: "20px", color: "#EE297B" }}></CheckIcon>
-          <div className="detail">5 products sold</div>
-        </div>
-        <div className="detailRow">
-          <LikeIcon sx={{ width: "20px", color: "#EE297B" }}></LikeIcon>
-          <div className="detail">55 likes earned</div>
-        </div>
-        <Button className="editProfileButton" onClick={() => setOpenEditPopup(true)}>
-          <EditIcon></EditIcon>
-          Edit Profile
-        </Button>
       </div>
 
-      <EditProfilePopup openPopup={openEditPopup} setOpenPopup={setOpenEditPopup}></EditProfilePopup>
+      <EditProfilePopup
+        openPopup={openEditPopup}
+        setOpenPopup={setOpenEditPopup}
+      ></EditProfilePopup>
     </div>
   );
 };

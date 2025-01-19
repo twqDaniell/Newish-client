@@ -1,15 +1,19 @@
 .containerProfile {
-    display: grid;
+    display: flex;
     /* Create exactly 2 equal-width columns */
-    grid-template-columns: 1fr 1fr; 
+    flex-direction: row;
+    justify-content: space-around;
     gap: 16px; 
     padding-top: 100px;
     padding: 100px 40px 40px; /* top, left/right, bottom */
+    height: 70vh;
   }
 
 .leftSide {
     display: flex;
     justify-content: center;
+    align-items: center;
+    width: 50%;
 }
 
 .profilePic {
@@ -17,6 +21,7 @@
     height: 30rem;
     border-radius: 50%;
     object-fit: cover;
+    border: 1px solid #ccc;
 }
 
 .detailRow {
@@ -34,6 +39,8 @@
     display: flex;
     flex-direction: column;
     justify-content: center;
+    width: 50%;
+    
 }
 
 .editProfileButton {

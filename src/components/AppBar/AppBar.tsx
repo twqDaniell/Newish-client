@@ -86,7 +86,7 @@ function ResponsiveAppBar() {
       position="static"
       sx={{ backgroundColor: "#F3E3E4", position: "fixed", zIndex: "100" }}
     >
-      <Container maxWidth="xl">
+      <div style={{ marginLeft: "15px", marginRight: "15px", maxWidth: "100%" }}>
         <Toolbar disableGutters>
           <img
             src={logo} // Replace with your illustration URL
@@ -174,7 +174,7 @@ function ResponsiveAppBar() {
             </Menu>
           </Box>
         </Toolbar>
-      </Container>
+      </div>
     </AppBar>
   );
 }
