@@ -68,7 +68,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     }
     setLoadingUser(false);
   }, []);
-
+  
   useEffect(() => {
     if (user) {
       localStorage.setItem("user", JSON.stringify(user));

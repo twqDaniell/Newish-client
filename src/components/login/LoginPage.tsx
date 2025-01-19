@@ -19,26 +19,32 @@ const LoginPage = () => {
 
   useEffect(() => {
     if (!loadingUser && user) {
-      navigate("/home");
+      navigate("/home"); // Redirect only after loadingUser is complete
     }
-  } , [loadingUser]);
+  }, [loadingUser, user, navigate]);
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (event: React.FormEvent) => {
     try {
       event.preventDefault();
       const response = await authService.login({ email, password });
-      setUser({ id: response._id, name: response.username, email: response.email, phoneNumber: response.phoneNumber, profilePicture: response.profilePicture });
+      setUser({
+        id: response._id,
+        name: response.username,
+        email: response.email,
+        phoneNumber: response.phoneNumber,
+        profilePicture: response.profilePicture,
+      });
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       navigate("/home");
     } catch (error) {
-      console.error("Login failed:", error.response.data);
-      setSnackbar({ ...snackbar, open: true, message: "Login failed: " + error.response.data, type: "error" });
+      setSnackbar({
+        ...snackbar,
+        open: true,
+        message: "Login failed: " + error.response?.data || error.message,
+        type: "error",
+      });
     }
-  };
-
-  const handleSnackbarClose = () => {
-    setSnackbar({ ...snackbar, open: false });
   };
 
   return (
@@ -58,7 +64,7 @@ const LoginPage = () => {
       <div className="right-section">
         <form className="login-form">
           <h2>Sign In</h2>
-          <p onClick={() => navigate('/register')}>
+          <p onClick={() => navigate("/register")}>
             If you don’t have an account, <a href="#">Register here!</a>
           </p>
 

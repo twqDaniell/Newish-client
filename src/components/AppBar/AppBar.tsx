@@ -21,7 +21,7 @@ const pages = ["Buy", "Sell", "Profile"];
 const settings = ["Profile", "Logout"];
 
 function ResponsiveAppBar() {
-  const { buyOrSell, setBuyOrSell } = useAppContext();
+  const { buyOrSell, setBuyOrSell, setUser } = useAppContext();
   const navigate = useNavigate();
 
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -57,26 +57,24 @@ function ResponsiveAppBar() {
   }
 
   const handleLogout = async () => {
-    const refreshToken = localStorage.getItem("refreshToken");
-
-    if (!refreshToken) {
-      console.error("No refresh token found.");
-      return;
-    }
-
     try {
-      await authService.logout(refreshToken); // Call the logout API
-      // Clear tokens from localStorage
+      const refreshToken = localStorage.getItem("refreshToken");
+      if (!refreshToken) throw new Error("No refresh token found");
+  
+      await authService.logout(refreshToken);
+  
+      // Clear user state and tokens
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
-      console.log("Logged out successfully.");
-
-      // Navigate back to the login page
+      setUser(null);
+  
+      // Navigate back to login
       navigate("/");
     } catch (error) {
-      console.error("Failed to logout:", error);
+      console.error("Failed to logout:", error.message || error);
     }
   };
+  
 
   const handleSetting = (setting: string) => () => {
     switch (setting) {

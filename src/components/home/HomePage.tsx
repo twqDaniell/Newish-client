@@ -33,6 +33,8 @@ const HomePage = () => {
   }, []);
 
   useEffect(() => {
+    if(!user) return;
+    
     if (buyOrSell == "buy") {
       setFilteredPosts(posts.filter((post) => post.sender._id !== user.id));
     } else {

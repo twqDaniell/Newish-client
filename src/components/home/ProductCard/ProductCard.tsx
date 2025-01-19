@@ -111,7 +111,7 @@ export default function ProductCard({ product }) {
 
   return (
     <div>
-      <Card sx={{ maxWidth: 345, backgroundColor: "#fff9fa" }}>
+      <Card sx={{ maxWidth: 345, backgroundColor: "#ffffff", boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px", borderRadius: "10px" }}>
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
