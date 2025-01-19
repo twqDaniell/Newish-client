@@ -7,6 +7,7 @@ import ProfilePage from "./components/profile/ProfilePage.tsx";
 import RegisterPage from "./components/register/RegisterPage.tsx";
 import { Snackbar, Alert } from "@mui/material";
 import { useAppContext } from "./contexts/AppContext.ts";
+import PostProvider from "./contexts/PostsContext.ts";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -23,7 +24,7 @@ const AppRoutes: React.FC = () => {
             <>
               <AppBar />
               <Routes>
-                <Route path="home" element={<HomePage />} />
+                <Route path="home" element={<PostProvider><HomePage /></PostProvider>} />
                 <Route path="profile" element={<ProfilePage />} />
               </Routes>
             </>

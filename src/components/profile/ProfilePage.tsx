@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import "./ProfilePage.css";
 import loginIllustration from "../../assets/login_illustration.png";
 import { useAppContext } from "../../contexts/AppContext.ts";
@@ -10,12 +10,22 @@ import LikeIcon from "@mui/icons-material/Favorite";
 import CheckIcon from "@mui/icons-material/Checklist";
 import EditProfilePopup from "./EditProfilePopup.tsx";
 import { Button } from "antd";
+import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const { user } = useAppContext();
+  const { user, loadingUser } = useAppContext();
   const [openEditPopup, setOpenEditPopup] = React.useState(false);
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    if (!loadingUser && !user) {
+      navigate("/");
+      return;
+    }
+  }, [loadingUser]);
 
   return (
+    user && // Add this line
     <div className="containerProfile">
       <div className="leftSide">
         <img
