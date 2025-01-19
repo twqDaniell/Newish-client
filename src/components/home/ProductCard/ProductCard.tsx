@@ -25,12 +25,17 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import ConfirmationPopup from "../../ConfirmationPopup/ConfirmationPopup.tsx";
 import { deletePost } from "../../../services/posts-service.ts";
+import ZoomInIcon from "@mui/icons-material/ZoomIn";
+import Box from "@mui/material/Box";
+import ImageModal from "../ImageModal/ImageModal.tsx";
 
 export default function ProductCard({ product }) {
   const { user, buyOrSell, setSnackbar } = useAppContext();
   const { posts, setPosts } = usePostContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
+  const [hovered, setHovered] = useState(false);
+  const [photoModalOpen, setPhotoModalOpen] = useState(false);
 
   const formatDate = (dateTime) => {
     const date = new Date(dateTime);
@@ -95,6 +100,8 @@ export default function ProductCard({ product }) {
     setConfirmOpen(true);
   };
 
+  const handleCloseImage = () => setPhotoModalOpen(false);
+
   const onConfirmDelete = async () => {
     try {
       await deletePost(product._id);
@@ -102,16 +109,31 @@ export default function ProductCard({ product }) {
         prevPosts.filter((post) => post._id !== product._id)
       );
 
-      setSnackbar({ open: true, message: "Post deleted successfully", type: "success" });
+      setSnackbar({
+        open: true,
+        message: "Post deleted successfully",
+        type: "success",
+      });
       setConfirmOpen(false);
     } catch (error) {
-      setSnackbar({ open: true, message: "Failed to delete post", type: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to delete post",
+        type: "error",
+      });
     }
   };
 
   return (
     <div>
-      <Card sx={{ maxWidth: 345, backgroundColor: "#ffffff", boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px", borderRadius: "10px" }}>
+      <Card
+        sx={{
+          maxWidth: 345,
+          backgroundColor: "#ffffff",
+          boxShadow: "rgba(0, 0, 0, 0.24) 0px 3px 8px",
+          borderRadius: "10px",
+        }}
+      >
         <CardHeader
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
@@ -134,12 +156,57 @@ export default function ProductCard({ product }) {
           title={product.title}
           subheader={formatDate(product.createdAt)}
         />
-        <CardMedia
-          component="img"
-          height="194"
-          image={`http://localhost:3002/${product.picture.replace(/\\/g, "/")}`}
-          alt="Paella dish"
-        />
+        <div
+          onClick={() => setPhotoModalOpen(true)}
+          onMouseEnter={() => setHovered(true)}
+          onMouseLeave={() => setHovered(false)}
+          style={{
+            position: "relative",
+            cursor: "pointer",
+            overflow: "hidden",
+          }}
+        >
+          {/* CardMedia */}
+          <CardMedia
+            component="img"
+            height="250"
+            image={`http://localhost:3002/${product.picture.replace(
+              /\\/g,
+              "/"
+            )}`}
+            alt={product.title}
+            sx={{
+              transition: "0.3s ease",
+              filter: hovered ? "brightness(70%)" : "brightness(100%)", // Overlay effect
+            }}
+          />
+
+          {/* Icon overlay */}
+          <Box
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "100%",
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              opacity: hovered ? 1 : 0,
+              transition: "0.3s ease",
+              backgroundColor: hovered ? "rgba(0, 0, 0, 0.2)" : "transparent",
+            }}
+          >
+            <IconButton
+              sx={{
+                color: "white",
+                fontSize: "50px",
+              }}
+            >
+              <ZoomInIcon fontSize="inherit" />
+            </IconButton>
+          </Box>
+        </div>
         <CardContent>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             {product.content}
@@ -222,6 +289,13 @@ export default function ProductCard({ product }) {
         onConfirm={onConfirmDelete}
         onCancel={() => setConfirmOpen(false)}
       ></ConfirmationPopup>
+
+      <ImageModal
+        open={photoModalOpen}
+        title={product.title}
+        picture={`http://localhost:3002/${product.picture.replace(/\\/g,"/")}`}
+        onClose={handleCloseImage}
+      ></ImageModal>
     </div>
   );
 }
