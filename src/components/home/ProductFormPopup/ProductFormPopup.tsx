@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "./ProductFormPopup.css"; // Link the updated CSS
-import { createPost } from "../../../services/posts-service.ts";
+import { createPost, updatePost } from "../../../services/posts-service.ts";
 import { useAppContext } from "../../../contexts/AppContext.ts";
 import { usePostContext } from "../../../contexts/PostsContext.ts";
 import { Post } from "../../../services/posts-service.ts";
@@ -47,13 +47,9 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       setPicturePreview(URL.createObjectURL(file));
     }
   };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
   
+  const uploadPost = async () => {
     try {
-      // Prepare FormData
-      
       const formData = new FormData();
       formData.append("title", name);
       formData.append("content", description);
@@ -74,6 +70,47 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       setSnackbar({ open: true, message: "Post created successfully", type: "success" });
     } catch (err) {
       setSnackbar({ open: true, message: "Failed to create post" + err, type: "error" });
+    }
+  }
+
+  const editPost = async () => {
+    try {
+      const formData = new FormData();
+      formData.append("title", name);
+      formData.append("content", description);
+      formData.append("oldPrice", originalPrice);
+      formData.append("newPrice", newPrice);
+      formData.append("city", city);
+      formData.append("timesWorn", timesWorn);
+      formData.append("sender", user.id); 
+  
+      if (picture) {
+        formData.append("picture", picture);
+      }
+  
+      const newPost = await updatePost(postToEdit._id, formData);
+      setPosts(prevPosts => {
+          const index = prevPosts.findIndex(post => post._id === postToEdit._id);
+          const newPosts = [...prevPosts];
+          newPosts[index] = newPost.data;
+          newPosts[index].sender = { _id: user.id, username: user.name, profilePicture: user.profilePicture };
+          return newPosts;
+        }
+      )
+      onClose();
+      setSnackbar({ open: true, message: "Post updated successfully", type: "success" });
+    } catch (err) {
+      setSnackbar({ open: true, message: "Failed to update post" + err, type: "error" });
+    }
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+  
+    if (isEdit) {
+      editPost();
+    } else {
+      uploadPost();
     }
   };  
 
@@ -195,7 +232,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
             Cancel
           </button>
           <button type="submit" className="submit-button" onClick={handleSubmit}>
-            Save Product
+            {isEdit ? "Save Changes" : "Upload Product"}
           </button>
         </div>
       </div>

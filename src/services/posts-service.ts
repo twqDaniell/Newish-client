@@ -59,3 +59,13 @@ export const deletePost = async (postId: string) => {
   });
 };
 
+export const updatePost = async (postId: string, formData: FormData) => {
+  const token = localStorage.getItem("accessToken");
+
+  return apiClient.put(`/posts/${postId}`, formData, {
+    headers: {
+      "Content-Type": "multipart/form-data",
+      Authorization: `Bearer ${token}`,
+    },
+  });
+};
