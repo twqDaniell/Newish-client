@@ -23,11 +23,13 @@ import { usePostContext } from "../../../contexts/PostsContext.ts";
 import { useState } from "react";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import ConfirmationPopup from "../../ConfirmationPopup/ConfirmationPopup.tsx";
 
 export default function ProductCard({ product }) {
   const { user, buyOrSell } = useAppContext();
   const { posts, setPosts } = usePostContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
+  const [confirmOpen, setConfirmOpen] = useState(false);
 
   const formatDate = (dateTime) => {
     const date = new Date(dateTime);
@@ -89,80 +91,96 @@ export default function ProductCard({ product }) {
   };
 
   const onDelete = () => {
-    console.log("Delete");
+    setConfirmOpen(true);
+  };
+
+  const onConfirmDelete = () => {
+    console.log("Confirm Delete");
   };
 
   return (
     <div>
-    <Card sx={{ maxWidth: 345, backgroundColor: "#fff9fa" }}>
-      <CardHeader
-        avatar={
-          <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
-            <img
-              style={{ width: "40px", height: "40px" }}
-              src={`http://localhost:3002/${product.sender.profilePicture.replace(
-                /\\/g,
-                "/"
-              )}`}
-            ></img>
-          </Avatar>
-        }
-        action={ buyOrSell === "sell" &&
-          <IconButton aria-label="settings" onClick={handleOpenMenu}>
-            <MoreVertIcon />
-          </IconButton>
-        }
-        title={product.title}
-        subheader={formatDate(product.createdAt)}
-      />
-      <CardMedia
-        component="img"
-        height="194"
-        image={`http://localhost:3002/${product.picture.replace(/\\/g, "/")}`}
-        alt="Paella dish"
-      />
-      <CardContent>
-        <Typography variant="body2" sx={{ color: "text.secondary" }}>
-          {product.content}
-        </Typography>
-        <div className="prices">
-          <Typography variant="body2" sx={{ color: "#e05a5a", fontSize: "15px" }} className="price">
-            Original Price: <s style={{ fontWeight: "bold" }}>{product.oldPrice}$</s>
-          </Typography>
-          <Typography variant="body2" sx={{ color: "#6c945f", fontSize: "15px" }} className="price">
-            New Price: <a style={{ fontWeight: "bold" }}>{product.newPrice}$</a>
-          </Typography>
-        </div>
-      </CardContent>
-      <CardActions disableSpacing>
-        <div className="likeConunt">
+      <Card sx={{ maxWidth: 345, backgroundColor: "#fff9fa" }}>
+        <CardHeader
+          avatar={
+            <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
+              <img
+                style={{ width: "40px", height: "40px" }}
+                src={`http://localhost:3002/${product.sender.profilePicture.replace(
+                  /\\/g,
+                  "/"
+                )}`}
+              ></img>
+            </Avatar>
+          }
+          action={
+            buyOrSell === "sell" && (
+              <IconButton aria-label="settings" onClick={handleOpenMenu}>
+                <MoreVertIcon />
+              </IconButton>
+            )
+          }
+          title={product.title}
+          subheader={formatDate(product.createdAt)}
+        />
+        <CardMedia
+          component="img"
+          height="194"
+          image={`http://localhost:3002/${product.picture.replace(/\\/g, "/")}`}
+          alt="Paella dish"
+        />
+        <CardContent>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {product.likes?.length}
+            {product.content}
           </Typography>
-          <IconButton
-            aria-label="add to favorites"
-            onClick={() => handleLike(product._id)}
-          >
-            {product.likes?.findIndex((like) => like == user.id) == -1 ? (
-              <FavoriteIcon />
-            ) : (
-              <FavoriteIcon style={{ color: "#EE297B" }} />
-            )}
-          </IconButton>
-        </div>
-        <div className="likeConunt">
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
-            {product.comments?.length}
-          </Typography>
-          <IconButton aria-label="add to favorites">
-            <CommentIcon />
-          </IconButton>
-        </div>
-      </CardActions>
-    </Card>
+          <div className="prices">
+            <Typography
+              variant="body2"
+              sx={{ color: "#e05a5a", fontSize: "15px" }}
+              className="price"
+            >
+              Original Price:{" "}
+              <s style={{ fontWeight: "bold" }}>{product.oldPrice}$</s>
+            </Typography>
+            <Typography
+              variant="body2"
+              sx={{ color: "#6c945f", fontSize: "15px" }}
+              className="price"
+            >
+              New Price:{" "}
+              <a style={{ fontWeight: "bold" }}>{product.newPrice}$</a>
+            </Typography>
+          </div>
+        </CardContent>
+        <CardActions disableSpacing>
+          <div className="likeConunt">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              {product.likes?.length}
+            </Typography>
+            <IconButton
+              aria-label="add to favorites"
+              onClick={() => handleLike(product._id)}
+            >
+              {product.likes?.findIndex((like) => like == user.id) == -1 ? (
+                <FavoriteIcon />
+              ) : (
+                <FavoriteIcon style={{ color: "#EE297B" }} />
+              )}
+            </IconButton>
+          </div>
+          <div className="likeConunt">
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              {product.comments?.length}
+            </Typography>
+            <IconButton aria-label="add to favorites">
+              <CommentIcon />
+            </IconButton>
+          </div>
+        </CardActions>
+      </Card>
 
-     {/* Menu Component */}
-     <Menu
+      {/* Menu Component */}
+      <Menu
         anchorEl={anchorEl}
         open={Boolean(anchorEl)}
         onClose={handleCloseMenu}
@@ -184,6 +202,15 @@ export default function ProductCard({ product }) {
           Delete
         </MenuItem>
       </Menu>
+
+      <ConfirmationPopup
+        open={confirmOpen}
+        message="Are you sure you want to delete this post?"
+        confirmText="Delete"
+        cancelText="Cancel"
+        onConfirm={onConfirmDelete}
+        onCancel={() => setConfirmOpen(false)}
+      ></ConfirmationPopup>
     </div>
   );
 }

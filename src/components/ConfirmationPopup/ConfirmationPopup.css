@@ -1,0 +1,69 @@
+/* Overlay */
+.confirmation-popup-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+  }
+  
+  /* Popup Container */
+  .confirmation-popup-container {
+    background: white;
+    border-radius: 10px;
+    padding: 20px;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+  }
+  
+  /* Message */
+  .confirmation-popup-message {
+    font-size: 18px;
+    margin: 0;
+  }
+  
+  /* Actions */
+  .confirmation-popup-actions {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+  }
+  
+  .confirmation-popup-cancel-button,
+  .confirmation-popup-confirm-button {
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .confirmation-popup-cancel-button {
+    background: #ccc;
+    color: #333;
+  }
+  
+  .confirmation-popup-cancel-button:hover {
+    background: #bbb;
+  }
+  
+  .confirmation-popup-confirm-button {
+    background: #ee297b;
+    color: white;
+  }
+  
+  .confirmation-popup-confirm-button:hover {
+    background: #d4266c;
+  }
+  
