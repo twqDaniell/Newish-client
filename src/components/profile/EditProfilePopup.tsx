@@ -11,20 +11,24 @@ import "./EditProfilePopup.css";
 export default function EditProfilePopup({ openPopup, setOpenPopup }) {
   const { user, setUser, setSnackbar } = useAppContext();
   const [name, setName] = useState(user.username);
-  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
+  const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || "");
   const [open, setOpen] = React.useState(false);
-  const [profilePicture, setProfilePicture] = useState<File | null>(null); // Store the file
-  const [profilePicturePreview, setProfilePicturePreview] = useState<
-    string | null
-  >(null);
+  const [profilePicture, setProfilePicture] = useState<File | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
+  const [isFormValid, setIsFormValid] = useState(false);
+  const [phoneError, setPhoneError] = useState("");
+
   const handleOpen = () => setOpen(true);
+
   const handleClose = () => {
     setOpen(false);
     setOpenPopup(false);
     setName(user.username);
-    setPhoneNumber(user.phoneNumber);
+    setPhoneNumber(user.phoneNumber || "");
     setProfilePicture(null);
     setProfilePicturePreview(null);
+    setIsFormValid(false);
+    setPhoneError("");
   };
 
   useEffect(() => {
@@ -33,15 +37,34 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
     }
   }, [openPopup]);
 
-  const handleProfilePictureChange = (
-    e: React.ChangeEvent<HTMLInputElement>
-  ) => {
+  useEffect(() => {
+    // Check form validity
+    const isValid =
+      name.length > 0 &&
+      phoneNumber.match(/^05\d{8}$/) && // Regex for '05********'
+      (profilePicture?.name.length > 0 || user.profilePicture.length > 0); // Ensure picture exists
+    setIsFormValid(isValid);
+
+    // Check phone number validity
+    if (!phoneNumber.match(/^05\d{8}$/) && phoneNumber.length > 0) {
+      setPhoneError("Please enter a valid phone number");
+    } else {
+      setPhoneError("");
+    }
+  }, [name, phoneNumber, profilePicture, user.profilePicture]);
+
+  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
-      setProfilePicture(file); // Store the file for submission
-
-      // Generate preview
+      setProfilePicture(file);
       setProfilePicturePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setPhoneNumber(value);
     }
   };
 
@@ -49,7 +72,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
     e.preventDefault();
 
     try {
-      // Prepare FormData for the update request
       const formData = new FormData();
       formData.append("username", name);
       formData.append("phoneNumber", phoneNumber);
@@ -57,7 +79,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
         formData.append("profilePicture", profilePicture);
       }
 
-      // Send the update request
       const res = await userService.updateUser(user._id, formData);
 
       setSnackbar({
@@ -128,8 +149,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               }}
               imgProps={{ referrerPolicy: "no-referrer" }}
             >
-              {!profilePicturePreview && "?"}{" "}
-              {/* Show placeholder if no picture */}
+              {!profilePicturePreview && "?"}
             </Avatar>
             <Button
               variant="text"
@@ -153,24 +173,31 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
           </Box>
 
           <div className="editForm">
-            {/* Form Fields */}
-            <label>Title *</label>
+            <label>Name*</label>
             <input
               type="text"
               placeholder="Enter your name"
               value={name}
               onChange={(e) => setName(e.target.value)}
               className="inputField"
-              required={true}
+              required
             />
 
-            <label>Phone Number *</label>
+            <label>
+              <div className="phoneWithError">
+                <span>Phone Number*</span>
+                {phoneError && <p className="error-message">{phoneError}</p>}
+              </div>
+            </label>
             <input
-              type="number"
+              type="text"
               placeholder="Enter your phone number"
               value={phoneNumber}
-              onChange={(e) => setPhoneNumber(e.target.value)}
+              onChange={handlePhoneNumberChange}
+              className="inputField"
+              required
             />
+            
           </div>
 
           <Button
@@ -178,6 +205,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
             variant="contained"
             className="saveEditButton"
             onClick={handleSubmit}
+            disabled={!isFormValid}
           >
             Save
           </Button>
