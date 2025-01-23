@@ -18,6 +18,8 @@ interface AppContextInterface {
   setBuyOrSell: React.Dispatch<React.SetStateAction<string>>;
   isGoogle: boolean;
   setIsGoogle: React.Dispatch<React.SetStateAction<boolean>>;
+  tips: string[];
+  setTips: React.Dispatch<React.SetStateAction<string[]>>;
 }
 
 // Define the user type
@@ -66,6 +68,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   const [loadingUser, setLoadingUser] = useState(true);
   const [buyOrSell, setBuyOrSell] = useState("buy");
   const [isGoogle, setIsGoogle] = useState(false);
+  const [tips, setTips] = useState<string[]>([]);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -94,6 +97,8 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     setBuyOrSell,
     isGoogle,
     setIsGoogle,
+    tips,
+    setTips,
   };
 
   return React.createElement(AppContext.Provider, { value }, children);

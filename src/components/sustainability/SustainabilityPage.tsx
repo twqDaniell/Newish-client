@@ -3,10 +3,11 @@ import { Container, Box, Typography, CircularProgress, List, ListItem, ListItemI
 import EcoIcon from "@mui/icons-material/Recycling";
 import Alert from "@mui/material/Alert";
 import "./SustainabilityPage.css";
+import { useAppContext } from "../../contexts/AppContext.ts";
 
 const SustainabilityPage = () => {
-  const [tips, setTips] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const { tips, setTips } = useAppContext();
+  const [loading, setLoading] = useState(tips.length == 0 ? true : false);
   const [error, setError] = useState(null);
 
   useEffect(() => {
@@ -25,7 +26,7 @@ const SustainabilityPage = () => {
       }
     };
 
-    fetchTips();
+    if (!tips.length) fetchTips();
   }, []);
 
   if (loading) {
