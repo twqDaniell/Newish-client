@@ -33,6 +33,7 @@ const LoginPage = () => {
         email: response.email,
         phoneNumber: response.phoneNumber,
         profilePicture: response.profilePicture,
+        soldCount: response.soldCount,
       });
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);

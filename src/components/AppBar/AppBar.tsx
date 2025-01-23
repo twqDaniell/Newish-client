@@ -1,4 +1,4 @@
-import * as React from "react";
+import React from "react";
 import AppBar from "@mui/material/AppBar";
 import Box from "@mui/material/Box";
 import Toolbar from "@mui/material/Toolbar";
@@ -6,12 +6,10 @@ import IconButton from "@mui/material/IconButton";
 import Typography from "@mui/material/Typography";
 import Menu from "@mui/material/Menu";
 import MenuIcon from "@mui/icons-material/Menu";
-import Container from "@mui/material/Container";
-import Avatar from "@mui/material/Avatar";
 import Button from "@mui/material/Button";
 import Tooltip from "@mui/material/Tooltip";
 import MenuItem from "@mui/material/MenuItem";
-import AdbIcon from "@mui/icons-material/Adb";
+import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth-service.ts";
@@ -23,7 +21,7 @@ const settings = ["Profile", "Logout"];
 function ResponsiveAppBar() {
   const { buyOrSell, setBuyOrSell, setUser, user } = useAppContext();
   const navigate = useNavigate();
-
+  const [activeTab, setActiveTab] = React.useState<string>("Buy"); // Track active tab
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
     null
   );
@@ -34,20 +32,23 @@ function ResponsiveAppBar() {
   const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElNav(event.currentTarget);
   };
+
   const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {};
+  const handleCloseNavMenu = () => {
+    setAnchorElNav(null);
+  };
 
   const handleCloseUserMenu = () => {
     setAnchorElUser(null);
   };
 
   const handlePageClick = (page: string) => {
+    setActiveTab(page); // Update the active tab
     if (page === "Profile") {
       navigate("/profile");
-      return;
     } else {
       navigate("/home");
       setBuyOrSell(page.toLowerCase());
@@ -65,6 +66,7 @@ function ResponsiveAppBar() {
       localStorage.removeItem("accessToken");
       localStorage.removeItem("refreshToken");
       setUser(null);
+      setBuyOrSell("buy");
 
       // Navigate back to login
       navigate("/");
@@ -99,8 +101,8 @@ function ResponsiveAppBar() {
       >
         <Toolbar disableGutters>
           <img
-            src={logo} // Replace with your illustration URL
-            alt="Illustration"
+            src={logo}
+            alt="Logo"
             className="illustration"
             style={{ width: "120px", height: "40px", marginRight: "10px" }}
           />
@@ -108,7 +110,7 @@ function ResponsiveAppBar() {
           <Box sx={{ flexGrow: 1, display: { xs: "flex", md: "none" } }}>
             <IconButton
               size="large"
-              aria-label="account of current user"
+              aria-label="menu"
               aria-controls="menu-appbar"
               aria-haspopup="true"
               onClick={handleOpenNavMenu}
@@ -133,7 +135,14 @@ function ResponsiveAppBar() {
               sx={{ display: { xs: "block", md: "none" } }}
             >
               {pages.map((page) => (
-                <MenuItem key={page} onClick={handleCloseNavMenu}>
+                <MenuItem
+                  key={page}
+                  onClick={() => {
+                    handlePageClick(page);
+                    handleCloseNavMenu();
+                  }}
+                  selected={activeTab === page}
+                >
                   <Typography sx={{ textAlign: "center", color: "#EE297B" }}>
                     {page}
                   </Typography>
@@ -141,50 +150,47 @@ function ResponsiveAppBar() {
               ))}
             </Menu>
           </Box>
+
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
             {pages.map((page) => (
               <Button
                 key={page}
-                onClick={() => {
-                  handlePageClick(page);
-                }}
+                onClick={() => handlePageClick(page)}
                 sx={{
                   my: 2,
-                  color: "#EE297B",
                   display: "block",
                   textTransform: "none",
                   fontSize: "16px",
+                  color: activeTab === page ? "#EE297B" : "#EE297B", // Highlight selected tab
+                  backgroundColor: activeTab === page ? "#FAF58C" : "transparent", // Add background color
+                  borderRadius: "8px", // Make it look like a tab
+                  padding: "6px 12px", // Add some padding for better UX
                 }}
               >
                 {page}
               </Button>
             ))}
           </Box>
+
           <Box
             sx={{
               flexGrow: 0,
-              direction: "flex",
-              flexDirection: "row",
-              marginTop: "5px",
+              display: "flex",
+              alignItems: "center",
+              gap: "10px",
             }}
           >
-            <div className="profileBar">
-              <Tooltip title="Open settings">
-                <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
-                  <Avatar
-                    src={`http://localhost:3002/${user?.profilePicture.replace(
-                      /\\/g,
-                      "/"
-                    )}`}
-                  />
-                </IconButton>
-              </Tooltip>
-              <Typography
-                sx={{ color: "#EE297B", display: { xs: "none", md: "block" } }}
-              >
-                {user?.name}
-              </Typography>
-            </div>
+            <Tooltip title="Open settings">
+              <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
+                <Avatar
+                  src={`http://localhost:3002/${user?.profilePicture.replace(
+                    /\\/g,
+                    "/"
+                  )}`}
+                />
+              </IconButton>
+            </Tooltip>
+            <Typography sx={{ color: "#EE297B" }}>{user?.name}</Typography>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"
@@ -203,9 +209,7 @@ function ResponsiveAppBar() {
             >
               {settings.map((setting) => (
                 <MenuItem key={setting} onClick={handleSetting(setting)}>
-                  <Typography sx={{ textAlign: "center" }}>
-                    {setting}
-                  </Typography>
+                  <Typography>{setting}</Typography>
                 </MenuItem>
               ))}
             </Menu>
@@ -215,4 +219,5 @@ function ResponsiveAppBar() {
     </AppBar>
   );
 }
+
 export default ResponsiveAppBar;

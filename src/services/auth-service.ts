@@ -8,6 +8,7 @@ export interface LoginResponse {
   email: string;
   phoneNumber: string;
   profilePicture: string;
+  soldCount: number;
 }
 export interface LoginRequest {
   email: string;
