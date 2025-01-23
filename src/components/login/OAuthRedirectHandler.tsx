@@ -1,8 +1,10 @@
 // src/components/OAuthRedirectHandler.tsx
 import React, { useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { useAppContext } from '../../contexts/AppContext.ts';
 
 const OAuthRedirectHandler: React.FC = () => {
+  const { setIsGoogle } = useAppContext();
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -12,10 +14,9 @@ const OAuthRedirectHandler: React.FC = () => {
 
     const accessToken = params.get('accessToken');
     const refreshToken = params.get('refreshToken');
-    const user = params.get('user'); // Assuming user data is JSON stringified]
+    const user = params.get('user'); // Assuming user data is JSON stringified
 
-    console.log(accessToken, refreshToken, user);
-    
+    setIsGoogle(true);    
 
     if (accessToken && refreshToken && user) {
       // Store tokens and user info in localStorage

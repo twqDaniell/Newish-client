@@ -36,9 +36,9 @@ const HomePage = () => {
     if(!user) return;
 
     if (buyOrSell == "buy") {
-      setFilteredPosts(posts.filter((post) => post.sender._id !== user.id));
+      setFilteredPosts(posts.filter((post) => post.sender._id !== user._id));
     } else {
-      setFilteredPosts(posts.filter((post) => post.sender._id === user.id));
+      setFilteredPosts(posts.filter((post) => post.sender._id === user._id));
     }
   }, [buyOrSell, posts]);
 

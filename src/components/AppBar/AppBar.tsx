@@ -183,10 +183,13 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
-                  src={`http://localhost:3002/${user?.profilePicture.replace(
+                  src={user?.googleId ? user.profilePicture : `http://localhost:3002/${user?.profilePicture.replace(
                     /\\/g,
                     "/"
                   )}`}
+                  imgProps={{
+                    referrerPolicy: 'no-referrer', // Add this to bypass CORS restrictions
+                  }}
                 />
               </IconButton>
             </Tooltip>

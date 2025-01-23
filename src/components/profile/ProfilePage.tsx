@@ -13,7 +13,7 @@ import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const { user, loadingUser } = useAppContext();
+  const { user, loadingUser, isGoogle } = useAppContext();
   const [openEditPopup, setOpenEditPopup] = React.useState(false);
   const navigate = useNavigate();
 
@@ -30,7 +30,8 @@ const ProfilePage = () => {
       <div className="leftSide">
         <img
           className="profilePic"
-          src={`http://localhost:3002/${user.profilePicture.replace(
+          referrerPolicy="no-referrer"
+          src={user.googleId ? user.profilePicture : `http://localhost:3002/${user.profilePicture.replace(
             /\\/g,
             "/"
           )}`}

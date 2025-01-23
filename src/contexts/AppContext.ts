@@ -16,16 +16,19 @@ interface AppContextInterface {
   setLoadingUser: React.Dispatch<React.SetStateAction<boolean>>;
   buyOrSell: string;
   setBuyOrSell: React.Dispatch<React.SetStateAction<string>>;
+  isGoogle: boolean;
+  setIsGoogle: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
 // Define the user type
 export interface User {
-  id: string;
+  _id: string;
   name: string;
   email: string;
   profilePicture: string;
   phoneNumber: string;
   soldCount: number;
+  googleId: string;
 }
 
 interface Snackbar {
@@ -61,6 +64,7 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
   });
   const [loadingUser, setLoadingUser] = useState(true);
   const [buyOrSell, setBuyOrSell] = useState("buy");
+  const [isGoogle, setIsGoogle] = useState(false);
 
   useEffect(() => {
     const storedUser = localStorage.getItem("user");
@@ -86,7 +90,9 @@ const AppProvider: React.FC<AppProviderProps> = ({ children }) => {
     loadingUser,
     setLoadingUser,
     buyOrSell,
-    setBuyOrSell
+    setBuyOrSell,
+    isGoogle,
+    setIsGoogle,
   };
 
   return React.createElement(AppContext.Provider, { value }, children);

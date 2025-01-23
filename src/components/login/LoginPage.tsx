@@ -28,12 +28,13 @@ const LoginPage = () => {
       event.preventDefault();
       const response = await authService.login({ email, password });
       setUser({
-        id: response._id,
+        _id: response._id,
         name: response.username,
         email: response.email,
         phoneNumber: response.phoneNumber,
         profilePicture: response.profilePicture,
         soldCount: response.soldCount,
+        googleId: null
       });
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);

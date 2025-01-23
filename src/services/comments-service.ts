@@ -7,6 +7,7 @@ export interface Comment {
     _id: string;
     username: string;
     profilePicture: string;
+    googleId: string;
   }; 
   message: string;
   createdAt?: string;
