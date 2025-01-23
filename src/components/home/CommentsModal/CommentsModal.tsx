@@ -54,7 +54,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
           ...comment,
           user: {
             _id: user._id,
-            username: user.name,
+            username: user.username,
             profilePicture: user.profilePicture,
             googleId: user.googleId
           },

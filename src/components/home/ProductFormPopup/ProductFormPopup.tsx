@@ -67,7 +67,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
   
       // Call createPost with FormData
       const newPost = await createPost(formData);
-      setPosts((prevPosts) => [...prevPosts, { ...newPost.data, sender: { _id: user._id, username: user.name, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber } }]);
+      setPosts((prevPosts) => [...prevPosts, { ...newPost.data, sender: { _id: user._id, username: user.username, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber } }]);
 
       onClose();
       setSnackbar({ open: true, message: "Post created successfully", type: "success" });
@@ -96,7 +96,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
           const index = prevPosts.findIndex(post => post._id === postToEdit._id);
           const newPosts = [...prevPosts];
           newPosts[index] = newPost.data;
-          newPosts[index].sender = { _id: user._id, username: user.name, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber };
+          newPosts[index].sender = { _id: user._id, username: user.username, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber };
           return newPosts;
         }
       )

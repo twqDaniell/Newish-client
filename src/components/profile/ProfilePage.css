@@ -1,56 +1,83 @@
-.containerProfile {
+.idCardContainer {
     display: flex;
-    /* Create exactly 2 equal-width columns */
-    flex-direction: row;
-    justify-content: space-around;
-    gap: 16px; 
-    padding-top: 100px;
-    padding: 100px 40px 40px; /* top, left/right, bottom */
-    height: 70vh;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    background-color: #f4f4f4;
   }
-
-.leftSide {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    width: 50%;
-}
-
-.profilePic {
-    width: 25rem;
-    height: 25rem;
+  
+  .idCard {
+    background: #ffffff;
+    border: 2px solid #dcdcdc;
+    border-radius: 15px;
+    width: 350px;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    overflow: hidden;
+  }
+  
+  .idCardHeader {
+    background-color: #ee297b;
+    color: white;
+    padding: 10px 0;
+    font-size: 1.2rem;
+    font-weight: bold;
+  }
+  
+  .idCardBody {
+    padding: 20px;
+  }
+  
+  .profilePicContainer {
+    margin-bottom: 20px;
+  }
+  
+  .profilePic {
+    width: 100px;
+    height: 100px;
     border-radius: 50%;
+    border: 3px solid #ee297b;
     object-fit: cover;
-    border: 1px solid #ccc;
-}
-
-.detailRow {
+  }
+  
+  .userDetails {
+    margin-top: 10px;
+  }
+  
+  .userDetails h1 {
+    font-size: 1.4rem;
+    color: #333333;
+    margin-bottom: 10px;
+  }
+  
+  .detailRow {
     display: flex;
-    flex-direction: row;
-    margin-top: 20px;
     align-items: center;
-}
-
-.detail {
-    margin-left: 10px;
-}
-
-.RightSide {
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    width: 50%;
-    
-}
-
-.editProfileButton {
-    margin-top: 30px;
-    width: 150px;
-    background-color: #FAF58C    ;
-}
-
-.editProfileButton:hover {
-    background-color: #fffdcf !important;
-    color: black !important;
-    border-color: rgb(223, 223, 223) !important;
-}
+    margin: 5px 0;
+    font-size: 0.9rem;
+    color: #555555;
+  }
+  
+  .detailRow .icon {
+    margin-right: 8px;
+    color: #ee297b;
+  }
+  
+  .idCardFooter {
+    padding: 15px;
+    background: #f9f9f9;
+    border-top: 1px solid #eaeaea;
+  }
+  
+  .editProfileButton {
+    background-color: #fdd835;
+    color: #333333;
+    font-weight: bold;
+    border: none;
+    cursor: pointer;
+  }
+  
+  .editProfileButton:hover {
+    background-color: #fbc02d;
+  }
+  

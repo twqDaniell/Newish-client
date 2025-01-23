@@ -23,12 +23,13 @@ interface AppContextInterface {
 // Define the user type
 export interface User {
   _id: string;
-  name: string;
+  username: string;
   email: string;
   profilePicture: string;
   phoneNumber: string;
   soldCount: number;
   googleId: string;
+  postsCount: number;
 }
 
 interface Snackbar {
