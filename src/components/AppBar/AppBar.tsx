@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth-service.ts";
 import { useAppContext } from "../../contexts/AppContext.ts";
 
-const pages = ["Buy", "Sell", "Profile"];
+const pages = ["Buy", "Sell", "Sustainability", "Profile"];
 const settings = ["Profile", "Logout"];
 
 function ResponsiveAppBar() {
@@ -49,6 +49,8 @@ function ResponsiveAppBar() {
     setActiveTab(page); // Update the active tab
     if (page === "Profile") {
       navigate("/profile");
+    } else if(page === "Sustainability") {
+      navigate("/sustainability");
     } else {
       navigate("/home");
       setBuyOrSell(page.toLowerCase());
