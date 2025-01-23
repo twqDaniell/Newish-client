@@ -47,6 +47,10 @@ const LoginPage = () => {
     }
   };
 
+  const handleGoogleLogin = async () => {
+    window.location.href = "http://localhost:3002/auth/google";
+  };
+
   return (
     <div className="login-page">
       {/* Left Section */}
@@ -129,6 +133,7 @@ const LoginPage = () => {
                   backgroundColor: "#c33c2f",
                 },
               }}
+              onClick={handleGoogleLogin}
             >
               <GoogleIcon />
             </Button>
