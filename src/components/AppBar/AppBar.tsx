@@ -162,7 +162,8 @@ function ResponsiveAppBar() {
                   textTransform: "none",
                   fontSize: "16px",
                   color: activeTab === page ? "#EE297B" : "#EE297B", // Highlight selected tab
-                  backgroundColor: activeTab === page ? "#FAF58C" : "transparent", // Add background color
+                  backgroundColor:
+                    activeTab === page ? "#FAF58C" : "transparent", // Add background color
                   borderRadius: "8px", // Make it look like a tab
                   padding: "6px 12px", // Add some padding for better UX
                 }}
@@ -183,17 +184,20 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
-                  src={user?.googleId ? user.profilePicture : `http://localhost:3002/${user?.profilePicture.replace(
-                    /\\/g,
-                    "/"
-                  )}`}
+                  src={
+                    user?.googleId
+                      ? user.profilePicture
+                      : `${
+                          process.env.REACT_APP_BASE_PHOTO_URL
+                        }/${user?.profilePicture.replace(/\\/g, "/")}`
+                  }
                   imgProps={{
-                    referrerPolicy: 'no-referrer', // Add this to bypass CORS restrictions
+                    referrerPolicy: "no-referrer", // Add this to bypass CORS restrictions
                   }}
                 />
               </IconButton>
             </Tooltip>
-            <Typography sx={{ color: "#EE297B" }}>{user?.name}</Typography>
+            <Typography sx={{ color: "#EE297B" }}>{user?.username}</Typography>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"

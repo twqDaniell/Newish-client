@@ -14,7 +14,9 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
   const [open, setOpen] = React.useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null); // Store the file
-  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<
+    string | null
+  >(null);
   const handleOpen = () => setOpen(true);
   const handleClose = () => {
     setOpen(false);
@@ -31,7 +33,9 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
     }
   }, [openPopup]);
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfilePicture(file); // Store the file for submission
@@ -56,12 +60,25 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
       // Send the update request
       const res = await userService.updateUser(user._id, formData);
 
-      setSnackbar({ open: true, message: "Profile updated successfully!", type: "success" });
-      setUser({ ...user, username: name, phoneNumber, profilePicture: res.user.profilePicture });
+      setSnackbar({
+        open: true,
+        message: "Profile updated successfully!",
+        type: "success",
+      });
+      setUser({
+        ...user,
+        username: name,
+        phoneNumber,
+        profilePicture: res.user.profilePicture,
+      });
       handleClose();
     } catch (error) {
       console.error("Error updating user:", error);
-      setSnackbar({ open: true, message: "Error updating user: " + error.message, type: "error" });
+      setSnackbar({
+        open: true,
+        message: "Error updating user: " + error.message,
+        type: "error",
+      });
     }
   };
 
@@ -91,34 +108,49 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
           </Typography>
 
           <Box sx={{ textAlign: "center", marginBottom: "20px" }}>
-              <Avatar
-                src={user.googleId ? user.profilePicture : `${profilePicturePreview || `http://localhost:3002/${user.profilePicture.replace(/\\/g, "/")}`}`}
-                alt="Profile"
-                sx={{
-                  width: 90,
-                  height: 90,
-                  margin: "0 auto",
-                  backgroundColor: "#f0f0f0",
-                }}
-                imgProps={ { referrerPolicy: "no-referrer" } }
-              >
-                {!profilePicturePreview && "?"} {/* Show placeholder if no picture */}
-              </Avatar>
-              <Button
-                variant="text"
-                component="label"
-                sx={{
-                  marginTop: 1,
-                  color: "#FF5722",
-                  textTransform: "none",
-                  fontWeight: "bold",
-                }}
-                style={{ fontSize: "10px" }}
-              >
-                Upload Profile Picture
-                <input type="file" accept="image/*" hidden onChange={handleProfilePictureChange} />
-              </Button>
-            </Box>
+            <Avatar
+              src={
+                user.googleId
+                  ? user.profilePicture
+                  : `${
+                      profilePicturePreview ||
+                      `${
+                        process.env.REACT_APP_BASE_PHOTO_URL
+                      }/${user.profilePicture.replace(/\\/g, "/")}`
+                    }`
+              }
+              alt="Profile"
+              sx={{
+                width: 90,
+                height: 90,
+                margin: "0 auto",
+                backgroundColor: "#f0f0f0",
+              }}
+              imgProps={{ referrerPolicy: "no-referrer" }}
+            >
+              {!profilePicturePreview && "?"}{" "}
+              {/* Show placeholder if no picture */}
+            </Avatar>
+            <Button
+              variant="text"
+              component="label"
+              sx={{
+                marginTop: 1,
+                color: "#FF5722",
+                textTransform: "none",
+                fontWeight: "bold",
+              }}
+              style={{ fontSize: "10px" }}
+            >
+              Upload Profile Picture
+              <input
+                type="file"
+                accept="image/*"
+                hidden
+                onChange={handleProfilePictureChange}
+              />
+            </Button>
+          </Box>
 
           <div className="editForm">
             {/* Form Fields */}
@@ -139,10 +171,16 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               value={phoneNumber}
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
-
           </div>
 
-          <Button sx={{ textTransform: "none" }} variant="contained" className="saveEditButton" onClick={handleSubmit}>Save</Button>
+          <Button
+            sx={{ textTransform: "none" }}
+            variant="contained"
+            className="saveEditButton"
+            onClick={handleSubmit}
+          >
+            Save
+          </Button>
         </Box>
       </Modal>
     </div>

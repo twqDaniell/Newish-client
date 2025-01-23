@@ -5,7 +5,17 @@ import { useAppContext } from "../../../contexts/AppContext.ts";
 import { usePostContext } from "../../../contexts/PostsContext.ts";
 import { Post } from "../../../services/posts-service.ts";
 
-const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean; onClose: () => void, isEdit: boolean, postToEdit: Post }) => {
+const ProductFormPopup = ({
+  open,
+  onClose,
+  isEdit,
+  postToEdit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  isEdit: boolean;
+  postToEdit: Post;
+}) => {
   const { posts, setPosts } = usePostContext();
   const { setSnackbar, user } = useAppContext();
   const [picture, setPicture] = useState<File | null>(null);
@@ -19,14 +29,18 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
 
   useEffect(() => {
     if (isEdit) {
-        setName(postToEdit.title);
-        setCity(postToEdit.city);
-        setOriginalPrice(postToEdit.oldPrice);
-        setNewPrice(postToEdit.newPrice);
-        setDescription(postToEdit.content);
-        setTimesWorn(postToEdit.timesWorn);
-        setPicturePreview(`http://localhost:3002/${postToEdit.picture.replace(/\\/g,"/")}`);
-        
+      setName(postToEdit.title);
+      setCity(postToEdit.city);
+      setOriginalPrice(postToEdit.oldPrice);
+      setNewPrice(postToEdit.newPrice);
+      setDescription(postToEdit.content);
+      setTimesWorn(postToEdit.timesWorn);
+      setPicturePreview(
+        `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
+          /\\/g,
+          "/"
+        )}`
+      );
     } else {
       setName("");
       setCity("");
@@ -46,7 +60,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       setPicturePreview(URL.createObjectURL(file));
     }
   };
-  
+
   const uploadPost = async () => {
     try {
       const formData = new FormData();
@@ -56,25 +70,43 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       formData.append("newPrice", newPrice);
       formData.append("city", city);
       formData.append("timesWorn", timesWorn);
-      formData.append("sender", user._id); 
-  
+      formData.append("sender", user._id);
+
       if (picture) {
         formData.append("picture", picture); // Append the file
       }
 
       console.log(user._id);
-      
-  
+
       // Call createPost with FormData
       const newPost = await createPost(formData);
-      setPosts((prevPosts) => [...prevPosts, { ...newPost.data, sender: { _id: user._id, username: user.username, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber } }]);
+      setPosts((prevPosts) => [
+        ...prevPosts,
+        {
+          ...newPost.data,
+          sender: {
+            _id: user._id,
+            username: user.username,
+            profilePicture: user.profilePicture,
+            phoneNumber: user.phoneNumber,
+          },
+        },
+      ]);
 
       onClose();
-      setSnackbar({ open: true, message: "Post created successfully", type: "success" });
+      setSnackbar({
+        open: true,
+        message: "Post created successfully",
+        type: "success",
+      });
     } catch (err) {
-      setSnackbar({ open: true, message: "Failed to create post" + err, type: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to create post" + err,
+        type: "error",
+      });
     }
-  }
+  };
 
   const editPost = async () => {
     try {
@@ -85,37 +117,51 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       formData.append("newPrice", newPrice);
       formData.append("city", city);
       formData.append("timesWorn", timesWorn);
-      formData.append("sender", user._id); 
-  
+      formData.append("sender", user._id);
+
       if (picture) {
         formData.append("picture", picture);
       }
-  
+
       const newPost = await updatePost(postToEdit._id, formData);
-      setPosts(prevPosts => {
-          const index = prevPosts.findIndex(post => post._id === postToEdit._id);
-          const newPosts = [...prevPosts];
-          newPosts[index] = newPost.data;
-          newPosts[index].sender = { _id: user._id, username: user.username, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber };
-          return newPosts;
-        }
-      )
+      setPosts((prevPosts) => {
+        const index = prevPosts.findIndex(
+          (post) => post._id === postToEdit._id
+        );
+        const newPosts = [...prevPosts];
+        newPosts[index] = newPost.data;
+        newPosts[index].sender = {
+          _id: user._id,
+          username: user.username,
+          profilePicture: user.profilePicture,
+          phoneNumber: user.phoneNumber,
+        };
+        return newPosts;
+      });
       onClose();
-      setSnackbar({ open: true, message: "Post updated successfully", type: "success" });
+      setSnackbar({
+        open: true,
+        message: "Post updated successfully",
+        type: "success",
+      });
     } catch (err) {
-      setSnackbar({ open: true, message: "Failed to update post" + err, type: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to update post" + err,
+        type: "error",
+      });
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
+
     if (isEdit) {
       editPost();
     } else {
       uploadPost();
     }
-  };  
+  };
 
   if (!open) return null; // Don't render if the popup is closed
 
@@ -125,7 +171,9 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
         <button className="popup-close-button" onClick={onClose}>
           &times;
         </button>
-        <h2 className="popup-title">{isEdit ? "Edit Product" : "Add new product"}</h2>
+        <h2 className="popup-title">
+          {isEdit ? "Edit Product" : "Add new product"}
+        </h2>
         <form className="popup-form" onSubmit={handleSubmit}>
           {/* Left Side - Picture Upload */}
           <div className="popup-left">
@@ -138,7 +186,11 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
             </div>
             <label className="file-upload">
               Upload Picture
-              <input type="file" accept="image/*" onChange={handlePictureChange} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePictureChange}
+              />
             </label>
           </div>
 
@@ -234,7 +286,11 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
           <button type="button" className="cancel-button" onClick={onClose}>
             Cancel
           </button>
-          <button type="submit" className="submit-button" onClick={handleSubmit}>
+          <button
+            type="submit"
+            className="submit-button"
+            onClick={handleSubmit}
+          >
             {isEdit ? "Save Changes" : "Upload Product"}
           </button>
         </div>

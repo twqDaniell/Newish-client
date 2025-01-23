@@ -103,14 +103,24 @@ export default function ProductCard({ product }) {
   };
 
   const onDelete = () => {
-    setConfirmDetails({message: "Are you sure you want to delete this post?", confirmText: "Delete", cancelText: "Cancel", onConfirm: onConfirmDelete});
+    setConfirmDetails({
+      message: "Are you sure you want to delete this post?",
+      confirmText: "Delete",
+      cancelText: "Cancel",
+      onConfirm: onConfirmDelete,
+    });
     setConfirmOpen(true);
   };
 
   const onSold = () => {
-    setConfirmDetails({message: "Have you sold this product?", confirmText: "Yes", cancelText: "No", onConfirm: onConfirmSold});
+    setConfirmDetails({
+      message: "Have you sold this product?",
+      confirmText: "Yes",
+      cancelText: "No",
+      onConfirm: onConfirmSold,
+    });
     setConfirmOpen(true);
-  }
+  };
 
   const handleCloseImage = () => setPhotoModalOpen(false);
 
@@ -153,7 +163,7 @@ export default function ProductCard({ product }) {
       setPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== product._id)
       );
-      
+
       await userService.sellProduct(user._id);
       setSnackbar({
         open: true,
@@ -185,10 +195,13 @@ export default function ProductCard({ product }) {
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
               <img
                 style={{ width: "40px", height: "40px" }}
-                src={product.sender.googleId ? product.sender.profilePicture : `http://localhost:3002/${product.sender.profilePicture.replace(
-                  /\\/g,
-                  "/"
-                )}`}
+                src={
+                  product.sender.googleId
+                    ? product.sender.profilePicture
+                    : `${
+                        process.env.REACT_APP_BASE_PHOTO_URL
+                      }/${product.sender.profilePicture.replace(/\\/g, "/")}`
+                }
                 referrerPolicy="no-referrer"
               ></img>
             </Avatar>
@@ -201,7 +214,13 @@ export default function ProductCard({ product }) {
             )
           }
           title={product.title}
-          subheader={<>{product.sender.username} - {product.sender.phoneNumber}<br />{formatDate(product.createdAt)}</>}
+          subheader={
+            <>
+              {product.sender.username} - {product.sender.phoneNumber}
+              <br />
+              {formatDate(product.createdAt)}
+            </>
+          }
         />
         <div
           onClick={() => setPhotoModalOpen(true)}
@@ -217,10 +236,9 @@ export default function ProductCard({ product }) {
           <CardMedia
             component="img"
             height="250"
-            image={`http://localhost:3002/${product.picture.replace(
-              /\\/g,
-              "/"
-            )}`}
+            image={`${
+              process.env.REACT_APP_BASE_PHOTO_URL
+            }/${product.picture.replace(/\\/g, "/")}`}
             alt={product.title}
             sx={{
               transition: "0.3s ease",
@@ -290,7 +308,7 @@ export default function ProductCard({ product }) {
             </Typography>
             <IconButton
               aria-label="add to favorites"
-              onClick={() => handleLike(product._id)}
+              onClick={() => handleLike(product?._id)}
             >
               {product.likes?.findIndex((like) => like == user._id) == -1 ? (
                 <FavoriteIcon />
@@ -303,7 +321,10 @@ export default function ProductCard({ product }) {
             <Typography variant="body2" sx={{ color: "text.secondary" }}>
               {product.commentCount}
             </Typography>
-            <IconButton aria-label="add to favorites" onClick={() => setCommentsOpen(true)}>
+            <IconButton
+              aria-label="add to favorites"
+              onClick={() => setCommentsOpen(true)}
+            >
               <CommentIcon />
             </IconButton>
           </div>
@@ -354,13 +375,24 @@ export default function ProductCard({ product }) {
       <ImageModal
         open={photoModalOpen}
         title={product.title}
-        picture={`http://localhost:3002/${product.picture.replace(/\\/g,"/")}`}
+        picture={`${
+          process.env.REACT_APP_BASE_PHOTO_URL
+        }/${product.picture.replace(/\\/g, "/")}`}
         onClose={handleCloseImage}
       ></ImageModal>
-      
-      <ProductFormPopup open={editOpen} onClose={handleEditClose} isEdit={true} postToEdit={product}></ProductFormPopup>
 
-      <CommentsModal open={commentsOpen} onClose={() => setCommentsOpen(false)} post={product}></CommentsModal>
+      <ProductFormPopup
+        open={editOpen}
+        onClose={handleEditClose}
+        isEdit={true}
+        postToEdit={product}
+      ></ProductFormPopup>
+
+      <CommentsModal
+        open={commentsOpen}
+        onClose={() => setCommentsOpen(false)}
+        post={product}
+      ></CommentsModal>
     </div>
   );
 }

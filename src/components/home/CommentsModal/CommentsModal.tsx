@@ -47,7 +47,11 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     if (!newComment.trim()) return;
 
     try {
-      const comment = await createComment(post._id, newComment.trim(), user._id);
+      const comment = await createComment(
+        post._id,
+        newComment.trim(),
+        user._id
+      );
       setComments([
         ...comments,
         {
@@ -56,7 +60,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
             _id: user._id,
             username: user.username,
             profilePicture: user.profilePicture,
-            googleId: user.googleId
+            googleId: user.googleId,
           },
         },
       ]);
@@ -126,7 +130,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
           {/* Post Details Section */}
           <div className="comments-modal-left">
             <img
-              src={`http://localhost:3002/${post.picture.replace(/\\/g, "/")}`}
+              src={`${
+                process.env.REACT_APP_BASE_PHOTO_URL
+              }/${post.picture.replace(/\\/g, "/")}`}
               alt={post.title}
               className="comments-modal-post-image"
             />
@@ -149,7 +155,11 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                   <React.Fragment key={index}>
                     <div className="comments-modal-comment">
                       <img
-                        src={comment.user.googleId ? comment.user.profilePicture : `http://localhost:3002/${comment.user.profilePicture}`}
+                        src={
+                          comment.user.googleId
+                            ? comment.user.profilePicture
+                            : `${process.env.REACT_APP_BASE_PHOTO_URL}/${comment.user.profilePicture}`
+                        }
                         alt={`${comment.user.username}'s profile`}
                         className="comments-modal-comment-avatar"
                         referrerPolicy="no-referrer"
@@ -189,8 +199,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                     aria-label="add to favorites"
                     onClick={() => handleLike(post._id)}
                   >
-                    {post.likes?.findIndex((like) => like == user._id) ==
-                    -1 ? (
+                    {post.likes?.findIndex((like) => like == user._id) == -1 ? (
                       <FavoriteIcon />
                     ) : (
                       <FavoriteIcon style={{ color: "#EE297B" }} />
