@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import "./ProductFormPopup.css"; // Link the updated CSS
+import "./ProductFormPopup.css";
 import { createPost, updatePost } from "../../../services/posts-service.ts";
 import { useAppContext } from "../../../contexts/AppContext.ts";
 import { usePostContext } from "../../../contexts/PostsContext.ts";
@@ -26,6 +26,8 @@ const ProductFormPopup = ({
   const [newPrice, setNewPrice] = useState("");
   const [description, setDescription] = useState("");
   const [timesWorn, setTimesWorn] = useState("0");
+  const [warningMessage, setWarningMessage] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
     if (isEdit) {
@@ -51,13 +53,50 @@ const ProductFormPopup = ({
       setPicture(null);
       setPicturePreview(null);
     }
-  }, []);
+  }, [isEdit, postToEdit]);
+
+  useEffect(() => {
+    const isValid =
+      name.length > 0 &&
+      city.length > 0 &&
+      description.length > 0 &&
+      originalPrice.length > 0 &&
+      newPrice.length > 0 &&
+      picture &&
+      Number(originalPrice) >= Number(newPrice);
+
+      console.log("Form Validation Check:" + isValid);
+
+    setIsFormValid(isValid);
+
+    if (Number(originalPrice) < Number(newPrice)) {
+      setWarningMessage("Original price cannot be lower than the new price.");
+    } else {
+      setWarningMessage("");
+    }
+  }, [name, city, description, originalPrice, newPrice, picture]);
 
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setPicture(file);
       setPicturePreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length <= 500) {
+      setDescription(e.target.value);
+    }
+  };
+
+  const handlePriceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setter(value);
     }
   };
 
@@ -157,13 +196,13 @@ const ProductFormPopup = ({
     e.preventDefault();
 
     if (isEdit) {
-      editPost();
+      await editPost();
     } else {
-      uploadPost();
+      await uploadPost();
     }
   };
 
-  if (!open) return null; // Don't render if the popup is closed
+  if (!open) return null;
 
   return (
     <div className="popup-overlay">
@@ -171,11 +210,8 @@ const ProductFormPopup = ({
         <button className="popup-close-button" onClick={onClose}>
           &times;
         </button>
-        <h2 className="popup-title">
-          {isEdit ? "Edit Product" : "Add new product"}
-        </h2>
+        <h2 className="popup-title">{isEdit ? "Edit Product" : "Add new product"}</h2>
         <form className="popup-form" onSubmit={handleSubmit}>
-          {/* Left Side - Picture Upload */}
           <div className="popup-left">
             <div className="picture-preview">
               {picturePreview ? (
@@ -190,14 +226,14 @@ const ProductFormPopup = ({
                 type="file"
                 accept="image/*"
                 onChange={handlePictureChange}
+                required
               />
             </label>
           </div>
 
-          {/* Right Side - Form Fields */}
           <div className="popup-right">
             <label>
-              Name
+              Title*
               <input
                 type="text"
                 value={name}
@@ -207,27 +243,31 @@ const ProductFormPopup = ({
             </label>
 
             <label>
-              Original Price
+              Original Price*
               <input
-                type="number"
+                type="text"
                 value={originalPrice}
-                onChange={(e) => setOriginalPrice(e.target.value)}
+                onChange={(e) => handlePriceChange(e, setOriginalPrice)}
                 required
               />
             </label>
 
-            <label>
-              New Price
+            <label className="newPriceLabel">
+              <div>
+                <span className="labelText">New Price* </span>
+                {warningMessage && <span className="warning-message">{warningMessage}</span>}
+              </div>
+
               <input
-                type="number"
+                type="text"
                 value={newPrice}
-                onChange={(e) => setNewPrice(e.target.value)}
+                onChange={(e) => handlePriceChange(e, setNewPrice)}
                 required
               />
             </label>
 
             <label>
-              Pickup City
+              Pickup City*
               <input
                 type="text"
                 value={city}
@@ -237,23 +277,24 @@ const ProductFormPopup = ({
             </label>
 
             <label>
-              Description
+              Description (max 500 chars)*
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleDescriptionChange}
                 rows={3}
                 required
               />
+              <small>{500 - description.length} characters remaining</small>
             </label>
 
             <label>
               How Many Times Used?
               <div className="radio-group">
-                <label className="radioLabel">
+                <label>
                   <input
                     type="radio"
                     value="0"
-                    checked={timesWorn == "0"}
+                    checked={timesWorn === "0"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   0 (Brand New)
@@ -262,7 +303,7 @@ const ProductFormPopup = ({
                   <input
                     type="radio"
                     value="1"
-                    checked={timesWorn == "1"}
+                    checked={timesWorn === "1"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   1
@@ -271,7 +312,7 @@ const ProductFormPopup = ({
                   <input
                     type="radio"
                     value="2"
-                    checked={timesWorn == "2"}
+                    checked={timesWorn === "2"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   2
@@ -281,7 +322,6 @@ const ProductFormPopup = ({
           </div>
         </form>
 
-        {/* Buttons */}
         <div className="popup-actions">
           <button type="button" className="cancel-button" onClick={onClose}>
             Cancel
@@ -289,6 +329,7 @@ const ProductFormPopup = ({
           <button
             type="submit"
             className="submit-button"
+            disabled={!isFormValid}
             onClick={handleSubmit}
           >
             {isEdit ? "Save Changes" : "Upload Product"}

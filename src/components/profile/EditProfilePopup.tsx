@@ -154,7 +154,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
 
           <div className="editForm">
             {/* Form Fields */}
-            <label>Name *</label>
+            <label>Title *</label>
             <input
               type="text"
               placeholder="Enter your name"
