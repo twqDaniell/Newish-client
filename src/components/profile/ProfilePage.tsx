@@ -46,7 +46,7 @@ const ProfilePage = () => {
           </div>
           <div className="detailRow">
             <PhoneIcon sx={{ width: "20px", color: "#EE297B" }}></PhoneIcon>
-            <div className="detail">{user.phoneNumber}</div>
+            <div className="detail">{user.phoneNumber ? user.phoneNumber : "Please update phone number"}</div>
           </div>
           <div className="detailRow">
             <PostsIcon sx={{ width: "20px", color: "#EE297B" }}></PostsIcon>

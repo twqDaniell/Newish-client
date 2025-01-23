@@ -140,14 +140,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               required={true}
             />
 
-            <label>Email *</label>
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
             <label>Phone Number *</label>
             <input
               type="number"
@@ -156,13 +148,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
 
-            <label>New Password (Optional)</label>
-            <input
-              type="password"
-              placeholder="Enter your new password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
           </div>
 
           <Button sx={{ textTransform: "none" }} variant="contained" className="saveEditButton" onClick={handleSubmit}>Save</Button>
