@@ -30,19 +30,36 @@ const ProductFormPopup = ({
   const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
+    const fetchPicture = async () => {
+      if (postToEdit.picture) {
+        const response = await fetch(
+          `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
+            /\\/g,
+            "/"
+          )}`
+        );
+        const blob = await response.blob();
+        const file = new File([blob], "existing-picture.jpg", {
+          type: blob.type,
+        });
+        setPicture(file);
+      }
+    };
+
     if (isEdit) {
       setName(postToEdit.title);
       setCity(postToEdit.city);
       setOriginalPrice(postToEdit.oldPrice);
       setNewPrice(postToEdit.newPrice);
       setDescription(postToEdit.content);
-      setTimesWorn(postToEdit.timesWorn);
+      setTimesWorn(postToEdit.timesWorn.toString());
       setPicturePreview(
         `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
           /\\/g,
           "/"
         )}`
       );
+      fetchPicture();
     } else {
       setName("");
       setCity("");
@@ -60,9 +77,9 @@ const ProductFormPopup = ({
       name.length > 0 &&
       city.length > 0 &&
       description.length > 0 &&
-      originalPrice.length > 0 &&
-      newPrice.length > 0 &&
-      picture &&
+      originalPrice.toString().length > 0 &&
+      newPrice.toString().length > 0 &&
+      picturePreview &&
       Number(originalPrice) >= Number(newPrice);
 
       console.log("Form Validation Check:" + isValid);
@@ -132,7 +149,7 @@ const ProductFormPopup = ({
         },
       ]);
 
-      onClose();
+      handleClose();
       setSnackbar({
         open: true,
         message: "Post created successfully",
@@ -177,7 +194,7 @@ const ProductFormPopup = ({
         };
         return newPosts;
       });
-      onClose();
+      handleClose();
       setSnackbar({
         open: true,
         message: "Post updated successfully",
@@ -202,12 +219,17 @@ const ProductFormPopup = ({
     }
   };
 
+  const handleClose = () => {
+    onClose();
+
+  }
+
   if (!open) return null;
 
   return (
     <div className="popup-overlay">
       <div className="popup-container">
-        <button className="popup-close-button" onClick={onClose}>
+        <button className="popup-close-button" onClick={handleClose}>
           &times;
         </button>
         <h2 className="popup-title">{isEdit ? "Edit Product" : "Add new product"}</h2>
@@ -323,7 +345,7 @@ const ProductFormPopup = ({
         </form>
 
         <div className="popup-actions">
-          <button type="button" className="cancel-button" onClick={onClose}>
+          <button type="button" className="cancel-button" onClick={handleClose}>
             Cancel
           </button>
           <button
