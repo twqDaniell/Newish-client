@@ -25,6 +25,7 @@ export interface User {
   email: string;
   profilePicture: string;
   phoneNumber: string;
+  soldCount: number;
 }
 
 interface Snackbar {

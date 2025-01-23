@@ -30,6 +30,7 @@ import Box from "@mui/material/Box";
 import ProductFormPopup from "../ProductFormPopup/ProductFormPopup.tsx";
 import ImageModal from "../ImageModal/ImageModal.tsx";
 import CommentsModal from "../CommentsModal/CommentsModal.tsx";
+import { userService } from "../../../services/users-service.ts";
 
 export default function ProductCard({ product }) {
   const { user, buyOrSell, setSnackbar } = useAppContext();
@@ -40,6 +41,7 @@ export default function ProductCard({ product }) {
   const [photoModalOpen, setPhotoModalOpen] = useState(false);
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
+  const [confirmDetails, setConfirmDetails] = useState(null);
 
   const formatDate = (dateTime) => {
     const date = new Date(dateTime);
@@ -101,8 +103,14 @@ export default function ProductCard({ product }) {
   };
 
   const onDelete = () => {
+    setConfirmDetails({message: "Are you sure you want to delete this post?", confirmText: "Delete", cancelText: "Cancel", onConfirm: onConfirmDelete});
     setConfirmOpen(true);
   };
+
+  const onSold = () => {
+    setConfirmDetails({message: "Have you sold this product?", confirmText: "Yes", cancelText: "No", onConfirm: onConfirmSold});
+    setConfirmOpen(true);
+  }
 
   const handleCloseImage = () => setPhotoModalOpen(false);
 
@@ -126,6 +134,38 @@ export default function ProductCard({ product }) {
         open: true,
         message: "Failed to delete post",
         type: "error",
+      });
+    }
+  };
+
+  const onConfirmSold = async () => {
+    if (!user) {
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "You must be logged in to sell a product.",
+      });
+      return;
+    }
+
+    try {
+      await deletePost(product._id);
+      setPosts((prevPosts) =>
+        prevPosts.filter((post) => post._id !== product._id)
+      );
+      
+      await userService.sellProduct(user.id);
+      setSnackbar({
+        open: true,
+        type: "success",
+        message: "Product marked as sold successfully!",
+      });
+      setConfirmOpen(false);
+    } catch (error) {
+      setSnackbar({
+        open: true,
+        type: "error",
+        message: "Failed to mark product as sold. Please try again.",
       });
     }
   };
@@ -220,6 +260,9 @@ export default function ProductCard({ product }) {
           <Typography variant="body2" sx={{ color: "text.secondary" }}>
             Pick up from: {product.city}
           </Typography>
+          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+            Number of times used: {product.timesWorn}
+          </Typography>
           <div className="prices">
             <Typography
               variant="body2"
@@ -275,6 +318,14 @@ export default function ProductCard({ product }) {
         <MenuItem
           onClick={() => {
             handleCloseMenu();
+            onSold();
+          }}
+        >
+          Sold
+        </MenuItem>
+        <MenuItem
+          onClick={() => {
+            handleCloseMenu();
             onEdit();
           }}
         >
@@ -292,10 +343,10 @@ export default function ProductCard({ product }) {
 
       <ConfirmationPopup
         open={confirmOpen}
-        message="Are you sure you want to delete this post?"
-        confirmText="Delete"
-        cancelText="Cancel"
-        onConfirm={onConfirmDelete}
+        message={confirmDetails?.message}
+        confirmText={confirmDetails?.confirmText}
+        cancelText={confirmDetails?.cancelText}
+        onConfirm={confirmDetails?.onConfirm}
         onCancel={() => setConfirmOpen(false)}
       ></ConfirmationPopup>
 

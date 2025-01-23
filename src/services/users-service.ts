@@ -6,6 +6,7 @@ export interface UpdateUserRequest {
   phoneNumber?: string;
   profilePicture?: File; // File for the updated profile picture
   password?: string;
+  soldCount?: number;
 }
 
 export const userService = {
@@ -19,5 +20,19 @@ export const userService = {
     });
     return response.data;
   },
+
+  sellProduct: async (userId: string): Promise<void> => {
+    const token = localStorage.getItem("accessToken");
+  
+    await apiClient.put(
+      `/users/sell/${userId}`,
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${token}`, // Include the user's token for authentication
+        },
+      }
+    );
+  }
 };
 
