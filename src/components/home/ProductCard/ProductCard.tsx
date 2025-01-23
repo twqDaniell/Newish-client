@@ -34,7 +34,7 @@ import { userService } from "../../../services/users-service.ts";
 
 export default function ProductCard({ product }) {
   const { user, buyOrSell, setSnackbar } = useAppContext();
-  const { posts, setPosts } = usePostContext();
+  const { setBuyPosts, setSellPosts } = usePostContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -63,7 +63,30 @@ export default function ProductCard({ product }) {
 
     try {
       const response = await likePost(postId, user._id);
-      setPosts((prevPosts) =>
+      setBuyPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            const hasLiked =
+              post.likes.findIndex((like) => like === user._id) !== -1;
+
+            if (hasLiked) {
+              return {
+                ...post,
+                likes: post.likes.filter((like) => like !== user._id),
+              };
+            } else {
+              return {
+                ...post,
+                likes: [...post.likes, user._id],
+              };
+            }
+          }
+
+          return post;
+        })
+      );
+
+      setSellPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             const hasLiked =
@@ -129,7 +152,7 @@ export default function ProductCard({ product }) {
   const onConfirmDelete = async () => {
     try {
       await deletePost(product._id);
-      setPosts((prevPosts) =>
+      setSellPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== product._id)
       );
 
@@ -160,7 +183,7 @@ export default function ProductCard({ product }) {
 
     try {
       await deletePost(product._id);
-      setPosts((prevPosts) =>
+      setSellPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== product._id)
       );
 

@@ -16,7 +16,7 @@ const ProductFormPopup = ({
   isEdit: boolean;
   postToEdit: Post;
 }) => {
-  const { posts, setPosts } = usePostContext();
+  const { setSellPosts } = usePostContext();
   const { setSnackbar, user } = useAppContext();
   const [picture, setPicture] = useState<File | null>(null);
   const [picturePreview, setPicturePreview] = useState<string | null>(null);
@@ -136,7 +136,7 @@ const ProductFormPopup = ({
 
       // Call createPost with FormData
       const newPost = await createPost(formData);
-      setPosts((prevPosts) => [
+      setSellPosts((prevPosts) => [
         ...prevPosts,
         {
           ...newPost.data,
@@ -180,7 +180,7 @@ const ProductFormPopup = ({
       }
 
       const newPost = await updatePost(postToEdit._id, formData);
-      setPosts((prevPosts) => {
+      setSellPosts((prevPosts) => {
         const index = prevPosts.findIndex(
           (post) => post._id === postToEdit._id
         );

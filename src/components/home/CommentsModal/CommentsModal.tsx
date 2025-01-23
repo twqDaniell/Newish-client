@@ -26,7 +26,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const { setSnackbar, user } = useAppContext();
-  const { posts, setPosts } = usePostContext();
+  const { setBuyPosts, setSellPosts } = usePostContext();
 
   useEffect(() => {
     if (open) {
@@ -87,7 +87,30 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
 
     try {
       const response = await likePost(postId, user._id);
-      setPosts((prevPosts) =>
+      setBuyPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            const hasLiked =
+              post.likes.findIndex((like) => like === user._id) !== -1;
+
+            if (hasLiked) {
+              return {
+                ...post,
+                likes: post.likes.filter((like) => like !== user._id),
+              };
+            } else {
+              return {
+                ...post,
+                likes: [...post.likes, user._id],
+              };
+            }
+          }
+
+          return post;
+        })
+      );
+
+      setSellPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             const hasLiked =
