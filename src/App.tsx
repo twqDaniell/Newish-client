@@ -9,6 +9,7 @@ import { Snackbar, Alert } from "@mui/material";
 import { useAppContext } from "./contexts/AppContext.ts";
 import PostProvider from "./contexts/PostsContext.ts";
 import { ThemeProvider } from "@mui/material/styles";
+import OAuthRedirectHandler from "./components/login/OAuthRedirectHandler.tsx";
 import theme from "./theme.ts";
 
 const AppRoutes: React.FC = () => {
@@ -17,6 +18,7 @@ const AppRoutes: React.FC = () => {
       <Routes>
         {/* Login at "/" */}
         <Route path="/" element={<LoginPage />} />
+        <Route path="/oauth-callback" element={<OAuthRedirectHandler />} />
         <Route path="/register" element={<RegisterPage />} />
 
         {/* Routes with AppBar */}

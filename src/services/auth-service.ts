@@ -9,6 +9,7 @@ export interface LoginResponse {
   phoneNumber: string;
   profilePicture: string;
   soldCount: number;
+  postsCount: number;
 }
 export interface LoginRequest {
   email: string;

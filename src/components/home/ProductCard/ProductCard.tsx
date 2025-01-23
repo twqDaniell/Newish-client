@@ -62,22 +62,22 @@ export default function ProductCard({ product }) {
     }
 
     try {
-      const response = await likePost(postId, user.id);
+      const response = await likePost(postId, user._id);
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             const hasLiked =
-              post.likes.findIndex((like) => like === user.id) !== -1;
+              post.likes.findIndex((like) => like === user._id) !== -1;
 
             if (hasLiked) {
               return {
                 ...post,
-                likes: post.likes.filter((like) => like !== user.id),
+                likes: post.likes.filter((like) => like !== user._id),
               };
             } else {
               return {
                 ...post,
-                likes: [...post.likes, user.id],
+                likes: [...post.likes, user._id],
               };
             }
           }
@@ -154,7 +154,7 @@ export default function ProductCard({ product }) {
         prevPosts.filter((post) => post._id !== product._id)
       );
       
-      await userService.sellProduct(user.id);
+      await userService.sellProduct(user._id);
       setSnackbar({
         open: true,
         type: "success",
@@ -185,10 +185,11 @@ export default function ProductCard({ product }) {
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
               <img
                 style={{ width: "40px", height: "40px" }}
-                src={`http://localhost:3002/${product.sender.profilePicture.replace(
+                src={product.sender.googleId ? product.sender.profilePicture : `http://localhost:3002/${product.sender.profilePicture.replace(
                   /\\/g,
                   "/"
                 )}`}
+                referrerPolicy="no-referrer"
               ></img>
             </Avatar>
           }
@@ -291,7 +292,7 @@ export default function ProductCard({ product }) {
               aria-label="add to favorites"
               onClick={() => handleLike(product._id)}
             >
-              {product.likes?.findIndex((like) => like == user.id) == -1 ? (
+              {product.likes?.findIndex((like) => like == user._id) == -1 ? (
                 <FavoriteIcon />
               ) : (
                 <FavoriteIcon style={{ color: "#EE297B" }} />

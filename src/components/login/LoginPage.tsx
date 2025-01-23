@@ -28,12 +28,14 @@ const LoginPage = () => {
       event.preventDefault();
       const response = await authService.login({ email, password });
       setUser({
-        id: response._id,
-        name: response.username,
+        _id: response._id,
+        username: response.username,
         email: response.email,
         phoneNumber: response.phoneNumber,
         profilePicture: response.profilePicture,
         soldCount: response.soldCount,
+        googleId: null,
+        postsCount: response.postsCount,
       });
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
@@ -46,6 +48,10 @@ const LoginPage = () => {
         type: "error",
       });
     }
+  };
+
+  const handleGoogleLogin = async () => {
+    window.location.href = "http://localhost:3002/auth/google";
   };
 
   return (
@@ -130,6 +136,7 @@ const LoginPage = () => {
                   backgroundColor: "#c33c2f",
                 },
               }}
+              onClick={handleGoogleLogin}
             >
               <GoogleIcon />
             </Button>

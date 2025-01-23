@@ -47,15 +47,16 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     if (!newComment.trim()) return;
 
     try {
-      const comment = await createComment(post._id, newComment.trim(), user.id);
+      const comment = await createComment(post._id, newComment.trim(), user._id);
       setComments([
         ...comments,
         {
           ...comment,
           user: {
-            _id: user.id,
-            username: user.name,
+            _id: user._id,
+            username: user.username,
             profilePicture: user.profilePicture,
+            googleId: user.googleId
           },
         },
       ]);
@@ -81,22 +82,22 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     }
 
     try {
-      const response = await likePost(postId, user.id);
+      const response = await likePost(postId, user._id);
       setPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             const hasLiked =
-              post.likes.findIndex((like) => like === user.id) !== -1;
+              post.likes.findIndex((like) => like === user._id) !== -1;
 
             if (hasLiked) {
               return {
                 ...post,
-                likes: post.likes.filter((like) => like !== user.id),
+                likes: post.likes.filter((like) => like !== user._id),
               };
             } else {
               return {
                 ...post,
-                likes: [...post.likes, user.id],
+                likes: [...post.likes, user._id],
               };
             }
           }
@@ -148,9 +149,10 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                   <React.Fragment key={index}>
                     <div className="comments-modal-comment">
                       <img
-                        src={`http://localhost:3002/${comment.user.profilePicture}`}
+                        src={comment.user.googleId ? comment.user.profilePicture : `http://localhost:3002/${comment.user.profilePicture}`}
                         alt={`${comment.user.username}'s profile`}
                         className="comments-modal-comment-avatar"
+                        referrerPolicy="no-referrer"
                       />
                       <div className="comments-modal-comment-content">
                         <p className="comments-modal-comment-user">
@@ -187,7 +189,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                     aria-label="add to favorites"
                     onClick={() => handleLike(post._id)}
                   >
-                    {post.likes?.findIndex((like) => like == user.id) ==
+                    {post.likes?.findIndex((like) => like == user._id) ==
                     -1 ? (
                       <FavoriteIcon />
                     ) : (

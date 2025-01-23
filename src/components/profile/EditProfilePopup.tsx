@@ -10,9 +10,7 @@ import "./EditProfilePopup.css";
 
 export default function EditProfilePopup({ openPopup, setOpenPopup }) {
   const { user, setUser, setSnackbar } = useAppContext();
-  const [email, setEmail] = useState(user.email);
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState(user.name);
+  const [name, setName] = useState(user.username);
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber);
   const [open, setOpen] = React.useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null); // Store the file
@@ -21,10 +19,8 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
   const handleClose = () => {
     setOpen(false);
     setOpenPopup(false);
-    setName(user.name);
-    setEmail(user.email);
+    setName(user.username);
     setPhoneNumber(user.phoneNumber);
-    setPassword("");
     setProfilePicture(null);
     setProfilePicturePreview(null);
   };
@@ -52,21 +48,16 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
       // Prepare FormData for the update request
       const formData = new FormData();
       formData.append("username", name);
-      formData.append("email", email);
       formData.append("phoneNumber", phoneNumber);
       if (profilePicture) {
         formData.append("profilePicture", profilePicture);
       }
 
-      if (password) {
-        formData.append("password", password);
-      }
-
       // Send the update request
-      const res = await userService.updateUser(user.id, formData);
+      const res = await userService.updateUser(user._id, formData);
 
       setSnackbar({ open: true, message: "Profile updated successfully!", type: "success" });
-      setUser({ ...user, name, email, phoneNumber, profilePicture: res.user.profilePicture });
+      setUser({ ...user, username: name, phoneNumber, profilePicture: res.user.profilePicture });
       handleClose();
     } catch (error) {
       console.error("Error updating user:", error);
@@ -101,7 +92,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
 
           <Box sx={{ textAlign: "center", marginBottom: "20px" }}>
               <Avatar
-                src={`${profilePicturePreview || `http://localhost:3002/${user.profilePicture.replace(/\\/g, "/")}`}`}
+                src={user.googleId ? user.profilePicture : `${profilePicturePreview || `http://localhost:3002/${user.profilePicture.replace(/\\/g, "/")}`}`}
                 alt="Profile"
                 sx={{
                   width: 90,
@@ -109,6 +100,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
                   margin: "0 auto",
                   backgroundColor: "#f0f0f0",
                 }}
+                imgProps={ { referrerPolicy: "no-referrer" } }
               >
                 {!profilePicturePreview && "?"} {/* Show placeholder if no picture */}
               </Avatar>
@@ -140,14 +132,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               required={true}
             />
 
-            <label>Email *</label>
-            <input
-              type="email"
-              placeholder="Enter your email address"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-            />
-
             <label>Phone Number *</label>
             <input
               type="number"
@@ -156,13 +140,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               onChange={(e) => setPhoneNumber(e.target.value)}
             />
 
-            <label>New Password (Optional)</label>
-            <input
-              type="password"
-              placeholder="Enter your new password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-            />
           </div>
 
           <Button sx={{ textTransform: "none" }} variant="contained" className="saveEditButton" onClick={handleSubmit}>Save</Button>

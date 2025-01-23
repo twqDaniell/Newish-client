@@ -1,19 +1,17 @@
 import React, { useEffect } from "react";
 import "./ProfilePage.css";
-import loginIllustration from "../../assets/login_illustration.png";
 import { useAppContext } from "../../contexts/AppContext.ts";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import EditIcon from "@mui/icons-material/Edit";
 import PostsIcon from "@mui/icons-material/PostAdd";
-import LikeIcon from "@mui/icons-material/Favorite";
 import CheckIcon from "@mui/icons-material/Checklist";
 import EditProfilePopup from "./EditProfilePopup.tsx";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
 
 const ProfilePage = () => {
-  const { user, loadingUser } = useAppContext();
+  const { user, loadingUser, isGoogle } = useAppContext();
   const [openEditPopup, setOpenEditPopup] = React.useState(false);
   const navigate = useNavigate();
 
@@ -25,55 +23,65 @@ const ProfilePage = () => {
   }, [loadingUser]);
 
   return (
-    user && // Add this line
-    <div className="containerProfile">
-      <div className="leftSide">
-        <img
-          className="profilePic"
-          src={`http://localhost:3002/${user.profilePicture.replace(
-            /\\/g,
-            "/"
-          )}`}
-        ></img>
-      </div>
-      <div className="RightSide">
-        <div className="details">
-          <h1>{user.name}</h1>
-          <div className="detailRow">
-            <EmailIcon sx={{ width: "20px", color: "#EE297B" }}></EmailIcon>
-            <div className="detail">{user.email}</div>
+    user && (
+      <div className="idCardContainer">
+        <div className="idCard">
+          <div className="idCardHeader">
+            <h2>MY PROFILE CARD</h2>
           </div>
-          <div className="detailRow">
-            <PhoneIcon sx={{ width: "20px", color: "#EE297B" }}></PhoneIcon>
-            <div className="detail">{user.phoneNumber}</div>
+          <div className="idCardBody">
+            <div className="profilePicContainer">
+              <img
+                className="profilePic"
+                referrerPolicy="no-referrer"
+                src={
+                  user.googleId
+                    ? user.profilePicture
+                    : `http://localhost:3002/${user.profilePicture.replace(
+                        /\\/g,
+                        "/"
+                      )}`
+                }
+                alt="Profile"
+              />
+            </div>
+            <div className="userDetails">
+              <h1>{user.username}</h1>
+              <div className="detailRow">
+                <EmailIcon className="icon" />
+                <span>{user.email}</span>
+              </div>
+              <div className="detailRow">
+                <PhoneIcon className="icon" />
+                <span>{user.phoneNumber || "Please update phone number"}</span>
+              </div>
+              <div className="detailRow">
+                <PostsIcon className="icon" />
+                <span>{user.postsCount} products up right now</span>
+              </div>
+              <div className="detailRow">
+                <CheckIcon className="icon" />
+                <span>{user.soldCount} products sold</span>
+              </div>
+            </div>
           </div>
-          <div className="detailRow">
-            <PostsIcon sx={{ width: "20px", color: "#EE297B" }}></PostsIcon>
-            <div className="detail">4 products up right now</div>
+          <div className="idCardFooter">
+            <Button
+              className="editProfileButton"
+              onClick={() => setOpenEditPopup(true)}
+            >
+              <EditIcon />
+              Edit Profile
+            </Button>
           </div>
-          <div className="detailRow">
-            <CheckIcon sx={{ width: "20px", color: "#EE297B" }}></CheckIcon>
-            <div className="detail">{user.soldCount} products sold</div>
-          </div>
-          <div className="detailRow">
-            <LikeIcon sx={{ width: "20px", color: "#EE297B" }}></LikeIcon>
-            <div className="detail">55 likes earned</div>
-          </div>
-          <Button
-            className="editProfileButton"
-            onClick={() => setOpenEditPopup(true)}
-          >
-            <EditIcon></EditIcon>
-            Edit Profile
-          </Button>
         </div>
-      </div>
 
-      <EditProfilePopup
-        openPopup={openEditPopup}
-        setOpenPopup={setOpenEditPopup}
-      ></EditProfilePopup>
-    </div>
+        <EditProfilePopup
+          openPopup={openEditPopup}
+          setOpenPopup={setOpenEditPopup}
+        />
+      </div>
+    )
   );
 };
 
