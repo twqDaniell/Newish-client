@@ -57,11 +57,25 @@ const HomePage = () => {
   // Set filtered posts based on buyOrSell
   useEffect(() => {
     if (buyOrSell === "buy") {
-      setFilteredPosts(buyPosts);
+      setFilteredPosts(buyPosts.filter((post) => post.sender._id !== user._id));
     } else if (buyOrSell === "sell") {
       setFilteredPosts(sellPosts);
     }
   }, [buyOrSell, buyPosts, sellPosts]);
+
+  useEffect(() => {
+    setPage(1);
+    setTotalPages(1);
+    setLoading(false);
+
+    if (buyOrSell === "buy") {
+      setFilteredPosts([]);
+      setBuyPosts([]); // Clear previous buy posts
+    } else if (buyOrSell === "sell") {
+      setFilteredPosts([]);
+      setSellPosts([]); // Clear previous sell posts
+    }
+  }, [buyOrSell, setBuyPosts, setSellPosts]);
 
   const handleScroll = () => {
     if (

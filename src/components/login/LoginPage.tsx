@@ -13,9 +13,17 @@ import User, { useAppContext } from "../../contexts/AppContext.ts";
 const LoginPage = () => {
   const [email, setEmail] = React.useState("");
   const [password, setPassword] = React.useState("");
+  const [emailTouched, setEmailTouched] = React.useState(false);
   const { snackbar, setSnackbar } = useAppContext();
   const { user, setUser, loadingUser } = useAppContext();
   const navigate = useNavigate();
+
+  const isEmailValid = (email) => {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
+  };
+
+  const isFormValid = email && password && isEmailValid(email);
 
   useEffect(() => {
     if (!loadingUser && user) {
@@ -23,7 +31,7 @@ const LoginPage = () => {
     }
   }, [loadingUser, user, navigate]);
 
-  const handleLogin = async (event: React.FormEvent) => {
+  const handleLogin = async (event) => {
     try {
       event.preventDefault();
       const response = await authService.login({ email, password });
@@ -69,7 +77,7 @@ const LoginPage = () => {
 
       {/* Right Section */}
       <div className="right-section">
-        <form className="login-form">
+        <form className="login-form" onSubmit={handleLogin}>
           <h2>Sign In</h2>
           <p onClick={() => navigate("/register")}>
             If you don’t have an account, <a href="#">Register here!</a>
@@ -80,7 +88,8 @@ const LoginPage = () => {
             type="email"
             placeholder="Enter your email address"
             value={email}
-            onChange={(e) => setEmail(e.target.value)} // Update email state
+            onChange={(e) => setEmail(e.target.value)}
+            onBlur={() => setEmailTouched(true)} // Mark email as touched on blur
           />
 
           <label>Password</label>
@@ -88,14 +97,22 @@ const LoginPage = () => {
             type="password"
             placeholder="Enter your password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)} // Update password state
+            onChange={(e) => setPassword(e.target.value)}
           />
+
+          <div className="error-container">
+              <span className="error-message-login">{emailTouched && !isEmailValid(email) &&"Invalid email address"}</span>
+          </div>
 
           <div className="forgotPassword">
             <a href="#">Forgot Password?</a>
           </div>
 
-          <button className="login-button" onClick={handleLogin}>
+          <button
+            className="login-button"
+            onClick={handleLogin}
+            disabled={!isFormValid}
+          >
             Login
           </button>
 

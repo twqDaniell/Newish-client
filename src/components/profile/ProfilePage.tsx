@@ -39,7 +39,7 @@ const ProfilePage = () => {
                     ? user.profilePicture
                     : `${
                         process.env.REACT_APP_BASE_PHOTO_URL
-                      }/${user.profilePicture.replace(/\\/g, "/")}`
+                      }/${user?.profilePicture?.replace(/\\/g, "/")}`
                 }
                 alt="Profile"
               />

@@ -137,7 +137,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
                       profilePicturePreview ||
                       `${
                         process.env.REACT_APP_BASE_PHOTO_URL
-                      }/${user.profilePicture.replace(/\\/g, "/")}`
+                      }/${user?.profilePicture?.replace(/\\/g, "/")}`
                     }`
               }
               alt="Profile"

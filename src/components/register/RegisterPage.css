@@ -41,7 +41,7 @@ body {
   }
   
   .register-form {
-    max-width: 400px;
+    max-width: 320px;
     margin: 0 auto;
   }
   
@@ -89,7 +89,7 @@ body {
     border-radius: 6px;
     cursor: pointer;
     font-size: 16px;
-    width: 50%;
+    width: 70%;
   }
   
   .register-button:hover {
@@ -127,3 +127,15 @@ body {
     color: #333;
   }
   
+  .error-message-register {
+    color: red;
+    font-size: 14px;
+    margin: 0;
+    width: 20%;
+  }
+
+  .register-button:disabled {
+    background-color: #f0f0f0 !important;
+    color: #ccc !important;
+    cursor: not-allowed;
+  }
