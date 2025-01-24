@@ -218,6 +218,7 @@ export default function ProductCard({ product }) {
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
               <img
                 style={{ width: "40px", height: "40px" }}
+                referrerPolicy="no-referrer"
                 src={
                   product.sender.googleId
                     ? product.sender.profilePicture
@@ -225,7 +226,6 @@ export default function ProductCard({ product }) {
                         process.env.REACT_APP_BASE_PHOTO_URL
                       }/${product.sender.profilePicture.replace(/\\/g, "/")}`
                 }
-                referrerPolicy="no-referrer"
               ></img>
             </Avatar>
           }
