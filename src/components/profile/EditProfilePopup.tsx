@@ -131,7 +131,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
           <Box sx={{ textAlign: "center", marginBottom: "20px" }}>
             <Avatar
               src={
-                user.googleId
+                user.profilePicture.startsWith("http")
                   ? user.profilePicture
                   : `${
                       profilePicturePreview ||

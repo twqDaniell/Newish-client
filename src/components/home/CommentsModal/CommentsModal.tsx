@@ -179,7 +179,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                     <div className="comments-modal-comment">
                       <img
                         src={
-                          comment.user.googleId
+                          comment.user.profilePicture.startsWith("http")
                             ? comment.user.profilePicture
                             : `${process.env.REACT_APP_BASE_PHOTO_URL}/${comment.user.profilePicture}`
                         }

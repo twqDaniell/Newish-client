@@ -49,7 +49,7 @@ function ResponsiveAppBar() {
     setActiveTab(page); // Update the active tab
     if (page === "Profile") {
       navigate("/profile");
-    } else if(page === "Sustainability") {
+    } else if (page === "Sustainability") {
       navigate("/sustainability");
     } else {
       navigate("/home");
@@ -187,7 +187,7 @@ function ResponsiveAppBar() {
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   src={
-                    user?.googleId
+                    user.profilePicture.startsWith("http")
                       ? user.profilePicture
                       : `${
                           process.env.REACT_APP_BASE_PHOTO_URL
