@@ -103,26 +103,6 @@ const LoginPage = () => {
           <div className="social-buttons">
             <Button
               variant="contained"
-              color="primary"
-              sx={{
-                borderRadius: "50%",
-                width: 40,
-                height: 40,
-                minWidth: 40,
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-                backgroundColor: "#1877F2", // Facebook Blue
-                "&:hover": {
-                  backgroundColor: "#145db2",
-                },
-                marginRight: 2,
-              }}
-            >
-              <FacebookIcon />
-            </Button>
-            <Button
-              variant="contained"
               sx={{
                 borderRadius: "50%",
                 width: 40,
