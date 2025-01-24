@@ -220,8 +220,8 @@ export default function ProductCard({ product }) {
                 style={{ width: "40px", height: "40px" }}
                 referrerPolicy="no-referrer"
                 src={
-                  product.sender.profilePicture.startsWith("http")
-                    ? product.sender.profilePicture
+                  product.sender?.profilePicture.startsWith("http")
+                    ? product.sender?.profilePicture
                     : `${
                         process.env.REACT_APP_BASE_PHOTO_URL
                       }/${product.sender.profilePicture.replace(/\\/g, "/")}`

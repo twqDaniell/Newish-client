@@ -187,8 +187,8 @@ function ResponsiveAppBar() {
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   src={
-                    user.profilePicture.startsWith("http")
-                      ? user.profilePicture
+                    user?.profilePicture.startsWith("http")
+                      ? user?.profilePicture
                       : `${
                           process.env.REACT_APP_BASE_PHOTO_URL
                         }/${user?.profilePicture?.replace(/\\/g, "/")}`
