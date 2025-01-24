@@ -15,7 +15,7 @@ import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth-service.ts";
 import { useAppContext } from "../../contexts/AppContext.ts";
 
-const pages = ["Buy", "Sell", "Profile"];
+const pages = ["Buy", "Sell", "Sustainability", "Profile"];
 const settings = ["Profile", "Logout"];
 
 function ResponsiveAppBar() {
@@ -49,6 +49,8 @@ function ResponsiveAppBar() {
     setActiveTab(page); // Update the active tab
     if (page === "Profile") {
       navigate("/profile");
+    } else if (page === "Sustainability") {
+      navigate("/sustainability");
     } else {
       navigate("/home");
       setBuyOrSell(page.toLowerCase());
@@ -162,7 +164,8 @@ function ResponsiveAppBar() {
                   textTransform: "none",
                   fontSize: "16px",
                   color: activeTab === page ? "#EE297B" : "#EE297B", // Highlight selected tab
-                  backgroundColor: activeTab === page ? "#FAF58C" : "transparent", // Add background color
+                  backgroundColor:
+                    activeTab === page ? "#FAF58C" : "transparent", // Add background color
                   borderRadius: "8px", // Make it look like a tab
                   padding: "6px 12px", // Add some padding for better UX
                 }}
@@ -183,17 +186,20 @@ function ResponsiveAppBar() {
             <Tooltip title="Open settings">
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
-                  src={user?.googleId ? user.profilePicture : `http://localhost:3002/${user?.profilePicture.replace(
-                    /\\/g,
-                    "/"
-                  )}`}
+                  src={
+                    user.profilePicture.startsWith("http")
+                      ? user.profilePicture
+                      : `${
+                          process.env.REACT_APP_BASE_PHOTO_URL
+                        }/${user?.profilePicture?.replace(/\\/g, "/")}`
+                  }
                   imgProps={{
-                    referrerPolicy: 'no-referrer', // Add this to bypass CORS restrictions
+                    referrerPolicy: "no-referrer", // Add this to bypass CORS restrictions
                   }}
                 />
               </IconButton>
             </Tooltip>
-            <Typography sx={{ color: "#EE297B" }}>{user?.name}</Typography>
+            <Typography sx={{ color: "#EE297B" }}>{user?.username}</Typography>
             <Menu
               sx={{ mt: "45px" }}
               id="menu-appbar"

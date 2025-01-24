@@ -140,7 +140,6 @@ textarea {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
-  margin-top: 20px;
 }
 
 .cancel-button,
@@ -169,4 +168,15 @@ textarea {
 
 .submit-button:hover {
   background: #f06bab;
+}
+
+.submit-button:disabled {
+  background-color: #ccc;
+  cursor: not-allowed;
+}
+
+.warning-message {
+  color: red;
+  font-size: 14px;
+  margin: 0;
 }

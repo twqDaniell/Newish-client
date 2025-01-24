@@ -11,6 +11,7 @@ import PostProvider from "./contexts/PostsContext.ts";
 import { ThemeProvider } from "@mui/material/styles";
 import OAuthRedirectHandler from "./components/login/OAuthRedirectHandler.tsx";
 import theme from "./theme.ts";
+import SustainabilityPage from "./components/sustainability/SustainabilityPage.tsx";
 
 const AppRoutes: React.FC = () => {
   return (
@@ -37,6 +38,7 @@ const AppRoutes: React.FC = () => {
                   }
                 />
                 <Route path="profile" element={<ProfilePage />} />
+                <Route path="sustainability" element={<SustainabilityPage />} />
               </Routes>
             </>
           }

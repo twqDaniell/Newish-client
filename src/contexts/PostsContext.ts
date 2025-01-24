@@ -3,8 +3,10 @@ import { Post } from "../services/posts-service.ts";
 
 // Define the context interface
 interface PostContextInterface {
-  posts: Post[];
-  setPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+  buyPosts: Post[];
+  setBuyPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+  sellPosts: Post[];
+  setSellPosts: React.Dispatch<React.SetStateAction<Post[]>>;
 }
 
 // Create the context with a default value of undefined
@@ -26,11 +28,14 @@ interface PostProviderProps {
 
 // Create the provider component
 const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [buyPosts, setBuyPosts] = useState<Post[]>([]);
+  const [sellPosts, setSellPosts] = useState<Post[]>([]);
   
   const value: PostContextInterface = {
-    posts,
-    setPosts,
+    buyPosts,
+    setBuyPosts,
+    sellPosts,
+    setSellPosts
   };
 
   return React.createElement(PostContext.Provider, { value }, children);

@@ -1,12 +1,22 @@
 import React, { useEffect, useState } from "react";
-import "./ProductFormPopup.css"; // Link the updated CSS
+import "./ProductFormPopup.css";
 import { createPost, updatePost } from "../../../services/posts-service.ts";
 import { useAppContext } from "../../../contexts/AppContext.ts";
 import { usePostContext } from "../../../contexts/PostsContext.ts";
 import { Post } from "../../../services/posts-service.ts";
 
-const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean; onClose: () => void, isEdit: boolean, postToEdit: Post }) => {
-  const { posts, setPosts } = usePostContext();
+const ProductFormPopup = ({
+  open,
+  onClose,
+  isEdit,
+  postToEdit,
+}: {
+  open: boolean;
+  onClose: () => void;
+  isEdit: boolean;
+  postToEdit: Post;
+}) => {
+  const { setSellPosts } = usePostContext();
   const { setSnackbar, user } = useAppContext();
   const [picture, setPicture] = useState<File | null>(null);
   const [picturePreview, setPicturePreview] = useState<string | null>(null);
@@ -16,17 +26,40 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
   const [newPrice, setNewPrice] = useState("");
   const [description, setDescription] = useState("");
   const [timesWorn, setTimesWorn] = useState("0");
+  const [warningMessage, setWarningMessage] = useState("");
+  const [isFormValid, setIsFormValid] = useState(false);
 
   useEffect(() => {
+    const fetchPicture = async () => {
+      if (postToEdit.picture) {
+        const response = await fetch(
+          `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
+            /\\/g,
+            "/"
+          )}`
+        );
+        const blob = await response.blob();
+        const file = new File([blob], "existing-picture.jpg", {
+          type: blob.type,
+        });
+        setPicture(file);
+      }
+    };
+
     if (isEdit) {
-        setName(postToEdit.title);
-        setCity(postToEdit.city);
-        setOriginalPrice(postToEdit.oldPrice);
-        setNewPrice(postToEdit.newPrice);
-        setDescription(postToEdit.content);
-        setTimesWorn(postToEdit.timesWorn);
-        setPicturePreview(`http://localhost:3002/${postToEdit.picture.replace(/\\/g,"/")}`);
-        
+      setName(postToEdit.title);
+      setCity(postToEdit.city);
+      setOriginalPrice(postToEdit.oldPrice);
+      setNewPrice(postToEdit.newPrice);
+      setDescription(postToEdit.content);
+      setTimesWorn(postToEdit.timesWorn.toString());
+      setPicturePreview(
+        `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
+          /\\/g,
+          "/"
+        )}`
+      );
+      fetchPicture();
     } else {
       setName("");
       setCity("");
@@ -37,7 +70,28 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       setPicture(null);
       setPicturePreview(null);
     }
-  }, []);
+  }, [isEdit, postToEdit]);
+
+  useEffect(() => {
+    const isValid =
+      name.length > 0 &&
+      city.length > 0 &&
+      description.length > 0 &&
+      originalPrice.toString().length > 0 &&
+      newPrice.toString().length > 0 &&
+      picturePreview &&
+      Number(originalPrice) >= Number(newPrice);
+
+      console.log("Form Validation Check:" + isValid);
+
+    setIsFormValid(isValid);
+
+    if (Number(originalPrice) < Number(newPrice)) {
+      setWarningMessage("Original price cannot be lower than the new price.");
+    } else {
+      setWarningMessage("");
+    }
+  }, [name, city, description, originalPrice, newPrice, picture]);
 
   const handlePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
@@ -46,7 +100,23 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       setPicturePreview(URL.createObjectURL(file));
     }
   };
-  
+
+  const handleDescriptionChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
+    if (e.target.value.length <= 500) {
+      setDescription(e.target.value);
+    }
+  };
+
+  const handlePriceChange = (
+    e: React.ChangeEvent<HTMLInputElement>,
+    setter: React.Dispatch<React.SetStateAction<string>>
+  ) => {
+    const value = e.target.value;
+    if (/^\d*$/.test(value)) {
+      setter(value);
+    }
+  };
+
   const uploadPost = async () => {
     try {
       const formData = new FormData();
@@ -56,25 +126,43 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       formData.append("newPrice", newPrice);
       formData.append("city", city);
       formData.append("timesWorn", timesWorn);
-      formData.append("sender", user._id); 
-  
+      formData.append("sender", user._id);
+
       if (picture) {
         formData.append("picture", picture); // Append the file
       }
 
       console.log(user._id);
-      
-  
+
       // Call createPost with FormData
       const newPost = await createPost(formData);
-      setPosts((prevPosts) => [...prevPosts, { ...newPost.data, sender: { _id: user._id, username: user.username, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber } }]);
+      setSellPosts((prevPosts) => [
+        ...prevPosts,
+        {
+          ...newPost.data,
+          sender: {
+            _id: user._id,
+            username: user.username,
+            profilePicture: user.profilePicture,
+            phoneNumber: user.phoneNumber,
+          },
+        },
+      ]);
 
-      onClose();
-      setSnackbar({ open: true, message: "Post created successfully", type: "success" });
+      handleClose();
+      setSnackbar({
+        open: true,
+        message: "Post created successfully",
+        type: "success",
+      });
     } catch (err) {
-      setSnackbar({ open: true, message: "Failed to create post" + err, type: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to create post" + err,
+        type: "error",
+      });
     }
-  }
+  };
 
   const editPost = async () => {
     try {
@@ -85,49 +173,67 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
       formData.append("newPrice", newPrice);
       formData.append("city", city);
       formData.append("timesWorn", timesWorn);
-      formData.append("sender", user._id); 
-  
+      formData.append("sender", user._id);
+
       if (picture) {
         formData.append("picture", picture);
       }
-  
+
       const newPost = await updatePost(postToEdit._id, formData);
-      setPosts(prevPosts => {
-          const index = prevPosts.findIndex(post => post._id === postToEdit._id);
-          const newPosts = [...prevPosts];
-          newPosts[index] = newPost.data;
-          newPosts[index].sender = { _id: user._id, username: user.username, profilePicture: user.profilePicture, phoneNumber: user.phoneNumber };
-          return newPosts;
-        }
-      )
-      onClose();
-      setSnackbar({ open: true, message: "Post updated successfully", type: "success" });
+      setSellPosts((prevPosts) => {
+        const index = prevPosts.findIndex(
+          (post) => post._id === postToEdit._id
+        );
+        const newPosts = [...prevPosts];
+        newPosts[index] = newPost.data;
+        newPosts[index].sender = {
+          _id: user._id,
+          username: user.username,
+          profilePicture: user.profilePicture,
+          phoneNumber: user.phoneNumber,
+        };
+        return newPosts;
+      });
+      handleClose();
+      setSnackbar({
+        open: true,
+        message: "Post updated successfully",
+        type: "success",
+      });
     } catch (err) {
-      setSnackbar({ open: true, message: "Failed to update post" + err, type: "error" });
+      setSnackbar({
+        open: true,
+        message: "Failed to update post" + err,
+        type: "error",
+      });
     }
-  }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-  
-    if (isEdit) {
-      editPost();
-    } else {
-      uploadPost();
-    }
-  };  
 
-  if (!open) return null; // Don't render if the popup is closed
+    if (isEdit) {
+      await editPost();
+    } else {
+      await uploadPost();
+    }
+  };
+
+  const handleClose = () => {
+    onClose();
+
+  }
+
+  if (!open) return null;
 
   return (
     <div className="popup-overlay">
       <div className="popup-container">
-        <button className="popup-close-button" onClick={onClose}>
+        <button className="popup-close-button" onClick={handleClose}>
           &times;
         </button>
         <h2 className="popup-title">{isEdit ? "Edit Product" : "Add new product"}</h2>
         <form className="popup-form" onSubmit={handleSubmit}>
-          {/* Left Side - Picture Upload */}
           <div className="popup-left">
             <div className="picture-preview">
               {picturePreview ? (
@@ -138,14 +244,18 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
             </div>
             <label className="file-upload">
               Upload Picture
-              <input type="file" accept="image/*" onChange={handlePictureChange} />
+              <input
+                type="file"
+                accept="image/*"
+                onChange={handlePictureChange}
+                required
+              />
             </label>
           </div>
 
-          {/* Right Side - Form Fields */}
           <div className="popup-right">
             <label>
-              Name
+              Title*
               <input
                 type="text"
                 value={name}
@@ -155,27 +265,31 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
             </label>
 
             <label>
-              Original Price
+              Original Price*
               <input
-                type="number"
+                type="text"
                 value={originalPrice}
-                onChange={(e) => setOriginalPrice(e.target.value)}
+                onChange={(e) => handlePriceChange(e, setOriginalPrice)}
                 required
               />
             </label>
 
-            <label>
-              New Price
+            <label className="newPriceLabel">
+              <div>
+                <span className="labelText">New Price* </span>
+                {warningMessage && <span className="warning-message">{warningMessage}</span>}
+              </div>
+
               <input
-                type="number"
+                type="text"
                 value={newPrice}
-                onChange={(e) => setNewPrice(e.target.value)}
+                onChange={(e) => handlePriceChange(e, setNewPrice)}
                 required
               />
             </label>
 
             <label>
-              Pickup City
+              Pickup City*
               <input
                 type="text"
                 value={city}
@@ -185,23 +299,24 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
             </label>
 
             <label>
-              Description
+              Description (max 500 chars)*
               <textarea
                 value={description}
-                onChange={(e) => setDescription(e.target.value)}
+                onChange={handleDescriptionChange}
                 rows={3}
                 required
               />
+              <small>{500 - description.length} characters remaining</small>
             </label>
 
             <label>
               How Many Times Used?
               <div className="radio-group">
-                <label className="radioLabel">
+                <label>
                   <input
                     type="radio"
                     value="0"
-                    checked={timesWorn == "0"}
+                    checked={timesWorn === "0"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   0 (Brand New)
@@ -210,7 +325,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
                   <input
                     type="radio"
                     value="1"
-                    checked={timesWorn == "1"}
+                    checked={timesWorn === "1"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   1
@@ -219,7 +334,7 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
                   <input
                     type="radio"
                     value="2"
-                    checked={timesWorn == "2"}
+                    checked={timesWorn === "2"}
                     onChange={(e) => setTimesWorn(e.target.value)}
                   />
                   2
@@ -229,12 +344,16 @@ const ProductFormPopup = ({ open, onClose, isEdit, postToEdit }: { open: boolean
           </div>
         </form>
 
-        {/* Buttons */}
         <div className="popup-actions">
-          <button type="button" className="cancel-button" onClick={onClose}>
+          <button type="button" className="cancel-button" onClick={handleClose}>
             Cancel
           </button>
-          <button type="submit" className="submit-button" onClick={handleSubmit}>
+          <button
+            type="submit"
+            className="submit-button"
+            disabled={!isFormValid}
+            onClick={handleSubmit}
+          >
             {isEdit ? "Save Changes" : "Upload Product"}
           </button>
         </div>

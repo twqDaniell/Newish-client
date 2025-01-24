@@ -26,7 +26,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const [newComment, setNewComment] = useState("");
   const [comments, setComments] = useState<Comment[]>([]);
   const { setSnackbar, user } = useAppContext();
-  const { posts, setPosts } = usePostContext();
+  const { setBuyPosts, setSellPosts } = usePostContext();
 
   useEffect(() => {
     if (open) {
@@ -47,7 +47,11 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     if (!newComment.trim()) return;
 
     try {
-      const comment = await createComment(post._id, newComment.trim(), user._id);
+      const comment = await createComment(
+        post._id,
+        newComment.trim(),
+        user._id
+      );
       setComments([
         ...comments,
         {
@@ -56,7 +60,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
             _id: user._id,
             username: user.username,
             profilePicture: user.profilePicture,
-            googleId: user.googleId
+            googleId: user.googleId,
           },
         },
       ]);
@@ -83,7 +87,30 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
 
     try {
       const response = await likePost(postId, user._id);
-      setPosts((prevPosts) =>
+      setBuyPosts((prevPosts) =>
+        prevPosts.map((post) => {
+          if (post._id === postId) {
+            const hasLiked =
+              post.likes.findIndex((like) => like === user._id) !== -1;
+
+            if (hasLiked) {
+              return {
+                ...post,
+                likes: post.likes.filter((like) => like !== user._id),
+              };
+            } else {
+              return {
+                ...post,
+                likes: [...post.likes, user._id],
+              };
+            }
+          }
+
+          return post;
+        })
+      );
+
+      setSellPosts((prevPosts) =>
         prevPosts.map((post) => {
           if (post._id === postId) {
             const hasLiked =
@@ -126,7 +153,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
           {/* Post Details Section */}
           <div className="comments-modal-left">
             <img
-              src={`http://localhost:3002/${post.picture.replace(/\\/g, "/")}`}
+              src={`${
+                process.env.REACT_APP_BASE_PHOTO_URL
+              }/${post.picture.replace(/\\/g, "/")}`}
               alt={post.title}
               className="comments-modal-post-image"
             />
@@ -149,7 +178,11 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                   <React.Fragment key={index}>
                     <div className="comments-modal-comment">
                       <img
-                        src={comment.user.googleId ? comment.user.profilePicture : `http://localhost:3002/${comment.user.profilePicture}`}
+                        src={
+                          comment.user.profilePicture.startsWith("http")
+                            ? comment.user.profilePicture
+                            : `${process.env.REACT_APP_BASE_PHOTO_URL}/${comment.user.profilePicture}`
+                        }
                         alt={`${comment.user.username}'s profile`}
                         className="comments-modal-comment-avatar"
                         referrerPolicy="no-referrer"
@@ -189,8 +222,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                     aria-label="add to favorites"
                     onClick={() => handleLike(post._id)}
                   >
-                    {post.likes?.findIndex((like) => like == user._id) ==
-                    -1 ? (
+                    {post.likes?.findIndex((like) => like == user._id) == -1 ? (
                       <FavoriteIcon />
                     ) : (
                       <FavoriteIcon style={{ color: "#EE297B" }} />

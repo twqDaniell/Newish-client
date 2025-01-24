@@ -35,12 +35,11 @@ const ProfilePage = () => {
                 className="profilePic"
                 referrerPolicy="no-referrer"
                 src={
-                  user.googleId
+                  user.profilePicture.startsWith("http")
                     ? user.profilePicture
-                    : `http://localhost:3002/${user.profilePicture.replace(
-                        /\\/g,
-                        "/"
-                      )}`
+                    : `${
+                        process.env.REACT_APP_BASE_PHOTO_URL
+                      }/${user?.profilePicture?.replace(/\\/g, "/")}`
                 }
                 alt="Profile"
               />

@@ -23,11 +23,24 @@ export interface Post {
   createdAt: string;
 }
 
-export const getPosts = () => {
+export const getPosts = (page: number = 1, limit: number = 10, sender: string | null = null) => {
   const abortController = new AbortController();
-  const request = apiClient.get<Post[]>("/posts", {
-    signal: abortController.signal,
-  });
+  const params: any = { page, limit };
+  if (sender) {
+    params.sender = sender; // Add sender only if provided
+  }
+  const token = localStorage.getItem("accessToken");
+  const request = apiClient.get<{ posts: Post[]; totalPages: number; totalPosts: number }>(
+    "/posts",
+    {
+      headers: {
+        "Content-Type": "multipart/form-data", // Set the content type for file uploads
+        Authorization: `Bearer ${token}`
+      },
+      params, // Include dynamic params
+      signal: abortController.signal,
+    }
+  );
   return { request, abort: () => abortController.abort() };
 };
 

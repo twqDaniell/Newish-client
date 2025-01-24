@@ -127,3 +127,14 @@ body {
     color: #333;
   }
   
+  .login-button:disabled {
+    background-color: #f0f0f0 !important;
+    color: #ccc !important;
+    cursor: not-allowed;
+  }
+
+  .error-message-login {
+    color: red;
+    font-size: 14px;
+    margin: 0;
+  }
