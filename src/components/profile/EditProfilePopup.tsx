@@ -14,7 +14,9 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
   const [phoneNumber, setPhoneNumber] = useState(user.phoneNumber || "");
   const [open, setOpen] = React.useState(false);
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
-  const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
+  const [profilePicturePreview, setProfilePicturePreview] = useState<
+    string | null
+  >(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const [phoneError, setPhoneError] = useState("");
 
@@ -42,7 +44,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
     const isValid =
       name.length > 0 &&
       phoneNumber.match(/^05\d{8}$/) && // Regex for '05********'
-      (profilePicture?.name.length > 0 || user.profilePicture.length > 0); // Ensure picture exists
+      (profilePicture?.name.length > 0 || user?.profilePicture.length > 0); // Ensure picture exists
     setIsFormValid(isValid);
 
     // Check phone number validity
@@ -51,9 +53,11 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
     } else {
       setPhoneError("");
     }
-  }, [name, phoneNumber, profilePicture, user.profilePicture]);
+  }, [name, phoneNumber, profilePicture, user?.profilePicture]);
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setProfilePicture(file);
@@ -131,8 +135,8 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
           <Box sx={{ textAlign: "center", marginBottom: "20px" }}>
             <Avatar
               src={
-                user.profilePicture.startsWith("http")
-                  ? user.profilePicture
+                user?.profilePicture.startsWith("http")
+                  ? user?.profilePicture
                   : `${
                       profilePicturePreview ||
                       `${
@@ -197,7 +201,6 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
               className="inputField"
               required
             />
-            
           </div>
 
           <Button
