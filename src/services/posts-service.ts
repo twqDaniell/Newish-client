@@ -29,9 +29,14 @@ export const getPosts = (page: number = 1, limit: number = 10, sender: string | 
   if (sender) {
     params.sender = sender; // Add sender only if provided
   }
+  const token = localStorage.getItem("accessToken");
   const request = apiClient.get<{ posts: Post[]; totalPages: number; totalPosts: number }>(
     "/posts",
     {
+      headers: {
+        "Content-Type": "multipart/form-data", // Set the content type for file uploads
+        Authorization: `Bearer ${token}`
+      },
       params, // Include dynamic params
       signal: abortController.signal,
     }
