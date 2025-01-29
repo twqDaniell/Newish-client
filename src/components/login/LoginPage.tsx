@@ -61,7 +61,7 @@ const LoginPage = () => {
   const handleGoogleLogin = async () => {
     console.log("env", process.env);
     console.log(`${process.env.REACT_APP_BASE_API_URL}/auth/google`);
-    window.location.href = `${process.env.REACT_APP_BASE_API_URL}/auth/google`;
+    // window.location.href = `${process.env.REACT_APP_BASE_API_URL}/auth/google`;
   };
 
   return (
