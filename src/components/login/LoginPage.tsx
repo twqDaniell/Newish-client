@@ -61,6 +61,8 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     console.log("env", process.env);
+    console.log("window.env", window.ENV);
+    
     console.log(`${apiUrl}/auth/google`);
     window.location.href = `${apiUrl}/auth/google`;
   };
