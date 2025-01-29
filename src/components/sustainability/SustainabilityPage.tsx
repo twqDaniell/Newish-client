@@ -13,7 +13,7 @@ const SustainabilityPage = () => {
   useEffect(() => {
     const fetchTips = async () => {
       try {
-        const response = await fetch("http://localhost:3002/api/sustainability-tips");
+        const response = await fetch(`${process.env.REACT_APP_BASE_API_URL}/api/sustainability-tips`);
         if (!response.ok) {
           throw new Error("Failed to fetch sustainability tips");
         }

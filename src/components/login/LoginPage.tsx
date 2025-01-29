@@ -59,7 +59,7 @@ const LoginPage = () => {
   };
 
   const handleGoogleLogin = async () => {
-    window.location.href = "http://localhost:3002/auth/google";
+    window.location.href = `${process.env.REACT_APP_BASE_API_URL}/auth/google`;
   };
 
   return (
