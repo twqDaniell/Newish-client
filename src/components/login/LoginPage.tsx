@@ -16,7 +16,7 @@ const LoginPage = () => {
   const [emailTouched, setEmailTouched] = React.useState(false);
   const { snackbar, setSnackbar } = useAppContext();
   const { user, setUser, loadingUser } = useAppContext();
-  const apiUrl = window.ENV?.BASE_API_URL.replace(":", ".nip.io:") || process.env.REACT_APP_BASE_API_URL;
+  const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
   const navigate = useNavigate();
 
   const isEmailValid = (email) => {
