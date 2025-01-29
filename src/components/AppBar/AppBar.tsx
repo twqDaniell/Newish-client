@@ -17,6 +17,7 @@ import { useAppContext } from "../../contexts/AppContext.ts";
 
 const pages = ["Buy", "Sell", "Sustainability", "Profile"];
 const settings = ["Profile", "Logout"];
+const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
 
 function ResponsiveAppBar() {
   const { buyOrSell, setBuyOrSell, setUser, user } = useAppContext();
@@ -190,7 +191,7 @@ function ResponsiveAppBar() {
                     user?.profilePicture.startsWith("http")
                       ? user?.profilePicture
                       : `${
-                          process.env.REACT_APP_BASE_PHOTO_URL
+                        apiUrl
                         }/${user?.profilePicture?.replace(/\\/g, "/")}`
                   }
                   imgProps={{

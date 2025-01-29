@@ -16,6 +16,7 @@ const LoginPage = () => {
   const [emailTouched, setEmailTouched] = React.useState(false);
   const { snackbar, setSnackbar } = useAppContext();
   const { user, setUser, loadingUser } = useAppContext();
+  const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
   const navigate = useNavigate();
 
   const isEmailValid = (email) => {
@@ -60,8 +61,8 @@ const LoginPage = () => {
 
   const handleGoogleLogin = async () => {
     console.log("env", process.env);
-    console.log(`${process.env.REACT_APP_BASE_API_URL}/auth/google`);
-    // window.location.href = `${process.env.REACT_APP_BASE_API_URL}/auth/google`;
+    console.log(`${apiUrl}/auth/google`);
+    window.location.href = `${apiUrl}/auth/google`;
   };
 
   return (

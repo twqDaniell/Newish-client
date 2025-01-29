@@ -19,6 +19,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
   >(null);
   const [isFormValid, setIsFormValid] = useState(false);
   const [phoneError, setPhoneError] = useState("");
+  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
 
   const handleOpen = () => setOpen(true);
 
@@ -140,7 +141,7 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
                   : `${
                       profilePicturePreview ||
                       `${
-                        process.env.REACT_APP_BASE_PHOTO_URL
+                        apiUrl
                       }/${user?.profilePicture?.replace(/\\/g, "/")}`
                     }`
               }

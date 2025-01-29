@@ -28,12 +28,13 @@ const ProductFormPopup = ({
   const [timesWorn, setTimesWorn] = useState("0");
   const [warningMessage, setWarningMessage] = useState("");
   const [isFormValid, setIsFormValid] = useState(false);
+  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
 
   useEffect(() => {
     const fetchPicture = async () => {
       if (postToEdit.picture) {
         const response = await fetch(
-          `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
+          `${apiUrl}/${postToEdit.picture.replace(
             /\\/g,
             "/"
           )}`
@@ -54,7 +55,7 @@ const ProductFormPopup = ({
       setDescription(postToEdit.content);
       setTimesWorn(postToEdit.timesWorn.toString());
       setPicturePreview(
-        `${process.env.REACT_APP_BASE_PHOTO_URL}/${postToEdit.picture.replace(
+        `${apiUrl}/${postToEdit.picture.replace(
           /\\/g,
           "/"
         )}`

@@ -27,6 +27,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
   const [comments, setComments] = useState<Comment[]>([]);
   const { setSnackbar, user } = useAppContext();
   const { setBuyPosts, setSellPosts } = usePostContext();
+  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
 
   useEffect(() => {
     if (open) {
@@ -154,7 +155,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
           <div className="comments-modal-left">
             <img
               src={`${
-                process.env.REACT_APP_BASE_PHOTO_URL
+                apiUrl
               }/${post.picture.replace(/\\/g, "/")}`}
               alt={post.title}
               className="comments-modal-post-image"
@@ -181,7 +182,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                         src={
                           comment.user?.profilePicture.startsWith("http")
                             ? comment.user?.profilePicture
-                            : `${process.env.REACT_APP_BASE_PHOTO_URL}/${comment.user.profilePicture}`
+                            : `${apiUrl}/${comment.user.profilePicture}`
                         }
                         alt={`${comment.user.username}'s profile`}
                         className="comments-modal-comment-avatar"

@@ -9,11 +9,12 @@ const SustainabilityPage = () => {
   const { tips, setTips } = useAppContext();
   const [loading, setLoading] = useState(tips.length == 0 ? true : false);
   const [error, setError] = useState(null);
+  const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
 
   useEffect(() => {
     const fetchTips = async () => {
       try {
-        const response = await fetch(`${process.env.REACT_APP_BASE_API_URL}/api/sustainability-tips`);
+        const response = await fetch(`${apiUrl}/api/sustainability-tips`);
         if (!response.ok) {
           throw new Error("Failed to fetch sustainability tips");
         }

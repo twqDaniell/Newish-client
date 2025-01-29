@@ -13,6 +13,7 @@ import { useNavigate } from "react-router-dom";
 const ProfilePage = () => {
   const { user, loadingUser, isGoogle } = useAppContext();
   const [openEditPopup, setOpenEditPopup] = React.useState(false);
+  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -38,7 +39,7 @@ const ProfilePage = () => {
                   user?.profilePicture.startsWith("http")
                     ? user?.profilePicture
                     : `${
-                        process.env.REACT_APP_BASE_PHOTO_URL
+                      apiUrl
                       }/${user?.profilePicture?.replace(/\\/g, "/")}`
                 }
                 alt="Profile"

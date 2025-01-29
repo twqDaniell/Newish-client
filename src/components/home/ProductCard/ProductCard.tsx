@@ -42,6 +42,7 @@ export default function ProductCard({ product }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [confirmDetails, setConfirmDetails] = useState(null);
+  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
 
   const formatDate = (dateTime) => {
     const date = new Date(dateTime);
@@ -223,7 +224,7 @@ export default function ProductCard({ product }) {
                   product.sender?.profilePicture.startsWith("http")
                     ? product.sender?.profilePicture
                     : `${
-                        process.env.REACT_APP_BASE_PHOTO_URL
+                      apiUrl
                       }/${product.sender.profilePicture.replace(/\\/g, "/")}`
                 }
               ></img>
@@ -260,7 +261,7 @@ export default function ProductCard({ product }) {
             component="img"
             height="250"
             image={`${
-              process.env.REACT_APP_BASE_PHOTO_URL
+              apiUrl
             }/${product.picture.replace(/\\/g, "/")}`}
             alt={product.title}
             sx={{
@@ -399,7 +400,7 @@ export default function ProductCard({ product }) {
         open={photoModalOpen}
         title={product.title}
         picture={`${
-          process.env.REACT_APP_BASE_PHOTO_URL
+          apiUrl
         }/${product.picture.replace(/\\/g, "/")}`}
         onClose={handleCloseImage}
       ></ImageModal>
