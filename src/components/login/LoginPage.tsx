@@ -64,7 +64,7 @@ const LoginPage = () => {
     console.log("window.env", window.ENV);
     
     console.log(`${apiUrl}/auth/google`);
-    window.location.href = `${apiUrl}/auth/google`;
+    window.location.href = `${apiUrl}.nip.io/auth/google`;
   };
 
   return (
