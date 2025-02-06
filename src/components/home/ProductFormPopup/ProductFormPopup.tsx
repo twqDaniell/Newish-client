@@ -60,7 +60,7 @@ const ProductFormPopup = ({
           "/"
         )}`
       );
-      fetchPicture();
+      // fetchPicture();
     } else {
       setName("");
       setCity("");
