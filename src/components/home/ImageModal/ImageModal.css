@@ -19,6 +19,7 @@
     position: relative;
     max-width: 90%;
     text-align: center;
+    max-height: 90%;
   }
   
   .image-popup-close {
@@ -46,5 +47,6 @@
     max-width: 100%;
     height: auto;
     border-radius: 8px;
+    max-height: 600px;
   }
   
