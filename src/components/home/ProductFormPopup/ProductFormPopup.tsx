@@ -318,14 +318,20 @@ const ProductFormPopup = ({
             </label>
 
             <label>
-              Description (max 500 chars)*
+              Description (max 100 chars)*
               <textarea
                 value={description}
-                onChange={handleDescriptionChange}
+                onChange={(e) => {
+                  const inputValue = e.target.value;
+                  if (inputValue.length <= 100) {
+                    handleDescriptionChange(e);
+                  }
+                }}
+            
                 rows={3}
                 required
               />
-              <small>{500 - description.length} characters remaining</small>
+              <small>{100 - description.length} characters remaining</small>
             </label>
 
             <label>

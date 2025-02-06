@@ -3,6 +3,7 @@ import ProductCard from "./ProductCard/ProductCard.tsx";
 import "./HomePage.css";
 import Fab from "@mui/material/Fab";
 import AddIcon from "@mui/icons-material/Add";
+import CircularProgress from "@mui/material/CircularProgress"; // Import Loader
 import NewProductPopup from "./ProductFormPopup/ProductFormPopup.tsx";
 import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext.ts";
@@ -16,8 +17,11 @@ const HomePage = () => {
   const [page, setPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [loading, setLoading] = useState(false);
+  const [loadAgainIndication, setLoadAgainIndication] = useState(0);
+  const [initialLoading, setInitialLoading] = useState(true); // Added initial loading state
   const navigate = useNavigate();
   const { buyPosts, setBuyPosts, sellPosts, setSellPosts } = usePostContext();
+  const [fetchComplete, setFetchComplete] = useState(false);
 
   useEffect(() => {
     if (!user) {
@@ -26,67 +30,84 @@ const HomePage = () => {
     }
   }, [user, navigate]);
 
+  useEffect(() => {
+    setPage(1);
+    setTotalPages(1);
+    setLoadAgainIndication((prev) => prev + 1);
+    setLoading(false);
+    setInitialLoading(true); // Show loader when switching buy/sell
+
+    if (buyOrSell === "buy") {
+      setFilteredPosts([]);
+      setBuyPosts([]);
+    } else if (buyOrSell === "sell") {
+      setFilteredPosts([]);
+      setSellPosts([]);
+    }
+  }, [buyOrSell]);
+
   // Fetch posts based on buyOrSell
   useEffect(() => {
     const fetchPosts = async () => {
-      if (loading || page > totalPages) return;
-
-      setLoading(true);
+      if (loading || page > totalPages) {
+        return;
+      }
+    
+      setLoading(true); // UI-related state
+      setFetchComplete(false); // Pagination-related state
       try {
+        const { request } = getPosts(page, 8, buyOrSell === "buy" ? null : user._id);
+        const response = await request;
+    
+        setTotalPages(response.data.totalPages);
+    
         if (buyOrSell === "buy") {
-          const { request } = getPosts(page, 8, null); // Fetch other users' posts
-          const response = await request;
-          setBuyPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
-          setTotalPages(response.data.totalPages);
-        } else if (buyOrSell === "sell") {
-          const { request } = getPosts(page, 8, user._id); // Fetch current user's posts
-          const response = await request;
-          setSellPosts((prevPosts) => [...prevPosts, ...response.data.posts]);
-          setTotalPages(response.data.totalPages);
+          setBuyPosts((prevPosts) => [...prevPosts, ...response.data.posts]); // Append posts
+        } else {
+          setSellPosts((prevPosts) => [...prevPosts, ...response.data.posts]); // Append posts
         }
       } catch (error) {
         console.error("Failed to fetch posts:", error);
       } finally {
-        setLoading(false);
+        setLoading(false); // For UI
+        setFetchComplete(true); // Allow pagination to proceed
+        setTimeout(() => setInitialLoading(false), 1000); // Hide the initial loader
       }
     };
+    
 
     fetchPosts();
-  }, [page, buyOrSell]);
+  }, [loadAgainIndication]);
 
-  // Set filtered posts based on buyOrSell
   useEffect(() => {
     if (buyOrSell === "buy") {
-      setFilteredPosts(buyPosts.filter((post) => post.sender._id !== user._id));
+      setFilteredPosts(buyPosts);
     } else if (buyOrSell === "sell") {
       setFilteredPosts(sellPosts);
     }
   }, [buyOrSell, buyPosts, sellPosts]);
 
-  useEffect(() => {
-    setPage(1);
-    setTotalPages(1);
-    setLoading(false);
+  function debounce(func, wait) {
+    let timeout;
+    return (...args) => {
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(this, args), wait);
+    };
+  }
 
-    if (buyOrSell === "buy") {
-      setFilteredPosts([]);
-      setBuyPosts([]); // Clear previous buy posts
-    } else if (buyOrSell === "sell") {
-      setFilteredPosts([]);
-      setSellPosts([]); // Clear previous sell posts
-    }
-  }, [buyOrSell, setBuyPosts, setSellPosts]);
-
-  const handleScroll = () => {
+  const handleScroll = debounce(() => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
       document.documentElement.offsetHeight - 50
     ) {
-      if (page < totalPages && !loading) {
+      if (page < totalPages && !loading && fetchComplete) {
         setPage((prevPage) => prevPage + 1);
+        setLoadAgainIndication((prev) => prev + 1);
+        setFetchComplete(false); // Reset fetchComplete for the next fetch
       }
+      
     }
-  };
+  }, 300 );
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -101,11 +122,20 @@ const HomePage = () => {
     setPopupOpen(false);
   };
 
+  // If still loading, show only the loader and hide everything else
+  if (initialLoading) {
+    return (
+      <div className="loader-container">
+        <CircularProgress size={100} thickness={5} sx={{ color: "#ED83B7" }} />
+      </div>
+    );
+  }
+
   return (
     <div className="container">
-      {filteredPosts.map((product, index) => (
+      {filteredPosts.length > 0 ? filteredPosts.map((product, index) => (
         <ProductCard key={index} product={product} />
-      ))}
+      )) : <h2>Nothing on sale yet</h2>}
 
       {loading && <p className="loading-text">Loading more posts...</p>}
 

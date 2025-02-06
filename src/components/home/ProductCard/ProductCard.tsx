@@ -31,6 +31,7 @@ import ProductFormPopup from "../ProductFormPopup/ProductFormPopup.tsx";
 import ImageModal from "../ImageModal/ImageModal.tsx";
 import CommentsModal from "../CommentsModal/CommentsModal.tsx";
 import { userService } from "../../../services/users-service.ts";
+import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ProductCard({ product }) {
   const { user, buyOrSell, setSnackbar } = useAppContext();
@@ -42,6 +43,7 @@ export default function ProductCard({ product }) {
   const [commentsOpen, setCommentsOpen] = useState(false);
   const [editOpen, setEditOpen] = useState(false);
   const [confirmDetails, setConfirmDetails] = useState(null);
+  const [imageLoaded, setImageLoaded] = useState(false);
   const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
 
   const formatDate = (dateTime) => {
@@ -218,7 +220,7 @@ export default function ProductCard({ product }) {
           avatar={
             <Avatar sx={{ bgcolor: red[500] }} aria-label="recipe">
               <img
-                style={{ width: "40px", height: "40px" }}
+                style={{ maxWidth: "60px", maxHeight: "60px" }}
                 referrerPolicy="no-referrer"
                 src={
                   product.sender?.profilePicture.startsWith("http")
@@ -247,15 +249,34 @@ export default function ProductCard({ product }) {
           }
         />
         <div
-          onClick={() => setPhotoModalOpen(true)}
-          onMouseEnter={() => setHovered(true)}
-          onMouseLeave={() => setHovered(false)}
+          onClick={() => imageLoaded && setPhotoModalOpen(true)}
+          onMouseEnter={() => imageLoaded && setHovered(true)}
+          onMouseLeave={() => imageLoaded && setHovered(false)}
           style={{
             position: "relative",
             cursor: "pointer",
             overflow: "hidden",
+            height: "250px",
           }}
         >
+          {!imageLoaded && (
+            <Box  
+            className="image-loader" 
+            sx={{
+              position: "absolute",
+              top: 0,
+              left: 0,
+              width: "100%",
+              height: "250px", // Ensures the loader has height
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              backgroundColor: "rgba(255, 255, 255, 0.7)", // Light background
+            }}>
+              <CircularProgress size={50} sx={{ color: "#ED83B7" }} />
+            </Box>
+          )}
+
           {/* CardMedia */}
           <CardMedia
             component="img"
@@ -267,7 +288,9 @@ export default function ProductCard({ product }) {
             sx={{
               transition: "0.3s ease",
               filter: hovered ? "brightness(70%)" : "brightness(100%)", // Overlay effect
+              display: imageLoaded ? "block" : "none"
             }}
+            onLoad={() => setImageLoaded(true)}
           />
 
           {/* Icon overlay */}
@@ -297,7 +320,7 @@ export default function ProductCard({ product }) {
           </Box>
         </div>
         <CardContent>
-          <Typography variant="body2" sx={{ color: "text.secondary" }}>
+          <Typography variant="body2" sx={{ color: "text.secondary", whiteSpace: "pre-wrap" }}>
             {product.content}
           </Typography>
           <Typography variant="body2" sx={{ color: "text.secondary" }}>

@@ -147,7 +147,7 @@ const RegisterPage = () => {
             onBlur={() => handleBlur("phoneNumber")}
           />
 
-          <label>Password</label>
+          <label>Password (Must be at least 6 characters)</label>
           <input
             type="password"
             placeholder="Enter your password"

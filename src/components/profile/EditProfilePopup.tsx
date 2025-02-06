@@ -136,14 +136,14 @@ export default function EditProfilePopup({ openPopup, setOpenPopup }) {
           <Box sx={{ textAlign: "center", marginBottom: "20px" }}>
             <Avatar
               src={
-                user?.profilePicture.startsWith("http")
+                !profilePicturePreview ? ( user?.profilePicture.startsWith("http")
                   ? user?.profilePicture
                   : `${
                       profilePicturePreview ||
                       `${
                         apiUrl
                       }/${user?.profilePicture?.replace(/\\/g, "/")}`
-                    }`
+                    }`) : profilePicturePreview
               }
               alt="Profile"
               sx={{
