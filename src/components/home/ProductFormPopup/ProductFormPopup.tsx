@@ -156,6 +156,15 @@ const ProductFormPopup = ({
         message: "Post created successfully",
         type: "success",
       });
+
+      setName("");
+      setCity("");
+      setOriginalPrice("");
+      setNewPrice("");
+      setDescription("");
+      setTimesWorn("0");
+      setPicture(null);
+      setPicturePreview(null);
     } catch (err) {
       setSnackbar({
         open: true,
@@ -201,6 +210,15 @@ const ProductFormPopup = ({
         message: "Post updated successfully",
         type: "success",
       });
+
+      setName("");
+      setCity("");
+      setOriginalPrice("");
+      setNewPrice("");
+      setDescription("");
+      setTimesWorn("0");
+      setPicture(null);
+      setPicturePreview(null);
     } catch (err) {
       setSnackbar({
         open: true,
