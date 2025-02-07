@@ -28,6 +28,11 @@ const HomePage = () => {
   const fetchedPagesRef = useRef({ buy: new Set(), sell: new Set() });
 
   useEffect(() => {
+    setBuyPosts([]);
+    setSellPosts([]);
+  }, [user]);
+
+  useEffect(() => {
     if (!user) {
       navigate("/");
       return;
@@ -60,27 +65,19 @@ const HomePage = () => {
     const fetchPosts = async () => {
       // If page exceeds total pages or already fetched, do nothing.
       if (page > totalPages || fetchedPagesRef.current[buyOrSell].has(page)) {
+        setInitialLoading(false);
         return;
       }
       setLoading(true);
+
       try {
         const { request } = getPosts(page, 8, buyOrSell === "buy" ? null : user._id);
         const response = await request;
         setTotalPages(response.data.totalPages);
         if (buyOrSell === "buy") {
-          setBuyPosts(prevPosts => {
-            const allPosts = [...prevPosts, ...response.data.posts];
-            return allPosts.filter(
-              (post, index, self) => self.findIndex((p) => p._id === post._id) === index
-            );
-          });
+          setBuyPosts(prevPosts => [...prevPosts, ...response.data.posts]);
         } else {
-          setSellPosts(prevPosts => {
-            const allPosts = [...prevPosts, ...response.data.posts];
-            return allPosts.filter(
-              (post, index, self) => self.findIndex((p) => p._id === post._id) === index
-            );
-          });
+          setSellPosts(prevPosts => [...prevPosts, ...response.data.posts]);
         }
         // Mark this page as fetched.
         fetchedPagesRef.current[buyOrSell].add(page);

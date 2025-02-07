@@ -13,6 +13,7 @@ import Avatar from "@mui/material/Avatar";
 import logo from "../../assets/logo.png";
 import { useNavigate } from "react-router-dom";
 import { authService } from "../../services/auth-service.ts";
+import { usePostContext } from "../../contexts/PostsContext.ts";
 import { useAppContext } from "../../contexts/AppContext.ts";
 
 const pages = ["Buy", "Sell", "Sustainability", "Profile"];
@@ -20,7 +21,8 @@ const settings = ["Profile", "Logout"];
 const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
 
 function ResponsiveAppBar() {
-  const { buyOrSell, setBuyOrSell, setUser, user } = useAppContext();
+  const { buyOrSell, setBuyOrSell, setUser, user, setIsGoogle, setTips } = useAppContext();
+  const { setBuyPosts, setSellPosts } = usePostContext();
   const navigate = useNavigate();
   const [activeTab, setActiveTab] = React.useState<string>("Buy"); // Track active tab
   const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
@@ -70,6 +72,10 @@ function ResponsiveAppBar() {
       localStorage.removeItem("refreshToken");
       setUser(null);
       setBuyOrSell("buy");
+      setBuyPosts([]);
+      setSellPosts([]);
+      setIsGoogle(false);
+      setTips([]);
 
       // Navigate back to login
       navigate("/");
@@ -188,7 +194,7 @@ function ResponsiveAppBar() {
               <IconButton onClick={handleOpenUserMenu} sx={{ p: 0 }}>
                 <Avatar
                   src={
-                    user?.profilePicture.startsWith("http")
+                    user?.profilePicture?.startsWith("http")
                       ? user?.profilePicture
                       : `${
                         apiUrl
