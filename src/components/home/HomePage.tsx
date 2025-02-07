@@ -30,6 +30,8 @@ const HomePage = () => {
   useEffect(() => {
     setBuyPosts([]);
     setSellPosts([]);
+    setPage(1);
+    setTotalPages(1);
   }, [user]);
 
   useEffect(() => {
