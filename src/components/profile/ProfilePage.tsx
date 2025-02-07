@@ -9,12 +9,19 @@ import CheckIcon from "@mui/icons-material/Checklist";
 import EditProfilePopup from "./EditProfilePopup.tsx";
 import { Button } from "antd";
 import { useNavigate } from "react-router-dom";
+import ProductCard from "../home/ProductCard/ProductCard.tsx";
+import { usePostContext } from "../../contexts/PostsContext.ts";
 
 const ProfilePage = () => {
-  const { user, loadingUser, isGoogle } = useAppContext();
+  const { user, loadingUser, isGoogle, setBuyOrSell } = useAppContext();
+  const { sellPosts } = usePostContext();
   const [openEditPopup, setOpenEditPopup] = React.useState(false);
   const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
   const navigate = useNavigate();
+
+  useEffect(() => {
+    setBuyOrSell("sell");
+  }, []);
 
   useEffect(() => {
     if (!loadingUser && !user) {
@@ -24,7 +31,8 @@ const ProfilePage = () => {
   }, [loadingUser]);
 
   return (
-    user && (
+    <div>
+    { user && (
       <div className="idCardContainer">
         <div className="idCard">
           <div className="idCardHeader">
@@ -76,12 +84,23 @@ const ProfilePage = () => {
           </div>
         </div>
 
+        <div className="productContainer">
+          <h2>On Sale Right Now</h2>
+          {sellPosts.length > 0 ? <div className="productList">
+            {sellPosts.map((product) => (
+              <ProductCard key={product._id} product={product} />
+            ))}
+            </div> :
+            <h3 className="productList">Nothing up right now</h3>
+          }
+        </div>
+      </div>)}
+      {openEditPopup && 
         <EditProfilePopup
           openPopup={openEditPopup}
           setOpenPopup={setOpenEditPopup}
-        />
+        />}
       </div>
-    )
   );
 };
 

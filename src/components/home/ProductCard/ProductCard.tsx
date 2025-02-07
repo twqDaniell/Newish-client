@@ -233,7 +233,7 @@ export default function ProductCard({ product }) {
             </Avatar>
           }
           action={
-            buyOrSell === "sell" && (
+            user._id == product.sender._id && (
               <IconButton aria-label="settings" onClick={handleOpenMenu}>
                 <MoreVertIcon />
               </IconButton>

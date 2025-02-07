@@ -1,9 +1,10 @@
 .idCardContainer {
     display: flex;
-    justify-content: center;
+    justify-content: space-between;
     align-items: center;
     height: 100vh;
     background-color: #f4f4f4;
+    overflow-y: hidden;
   }
   
   .idCard {
@@ -14,6 +15,8 @@
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
     text-align: center;
     overflow: hidden;
+    margin-left: 10%;
+    margin-top: 5%;
   }
   
   .idCardHeader {
@@ -81,3 +84,21 @@
     background-color: #fbc02d;
   }
   
+  .productContainer {
+    height: 86.5%;
+    overflow-y: auto;
+    /* border: 2px solid #ccc; */
+    padding: 10px;
+    /* border-radius: 10px; */
+    margin-top: 5%;
+    padding-right: 100px;
+    padding-left: 100px;
+    background: #ebebeb;
+  }
+  
+  .productList {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 15px;
+    padding: 10px;
+  }

@@ -4,13 +4,17 @@ import "./index.css";
 import App from "./App.tsx";
 import reportWebVitals from "./reportWebVitals.ts";
 import AppProvider from "./contexts/AppContext.ts";
+import PostProvider from "./contexts/PostsContext.ts";
 
 const root = ReactDOM.createRoot(
   document.getElementById("root") as HTMLElement
 );
 root.render(
   <AppProvider>
+                    <PostProvider>
+
       <App />
+      </PostProvider>
   </AppProvider>
 );
 
