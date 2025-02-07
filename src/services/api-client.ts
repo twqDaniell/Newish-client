@@ -1,6 +1,8 @@
 import axios, { CanceledError } from "axios";
 import { jwtDecode } from "jwt-decode";
+import { useAppContext } from "../contexts/AppContext";
 
+const setUser = useAppContext().setUser;
 const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
 
 const isTokenExpired = (token: string | null) => {
@@ -12,6 +14,7 @@ const isTokenExpired = (token: string | null) => {
 const logoutUser = () => {
   localStorage.removeItem("accessToken");
   localStorage.removeItem("refreshToken");
+  setUser(null);
   window.location.href = "/";
 };
 
