@@ -50,6 +50,7 @@ const HomePage = () => {
         setTotalPages(1);
         setInitialLoading(true);
         setBuyPosts([]);
+        setRefreshTrigger(prev => !prev);
       }
     } else if (buyOrSell === "sell") {
       if (sellPosts.length === 0) {
@@ -58,6 +59,7 @@ const HomePage = () => {
         setTotalPages(1);
         setInitialLoading(true);
         setSellPosts([]);
+        setRefreshTrigger(prev => !prev);
       }
     }
   }, [buyOrSell]);
@@ -92,7 +94,7 @@ const HomePage = () => {
     };
 
     fetchPosts();
-  }, [page, buyOrSell, refreshTrigger]);
+  }, [page, refreshTrigger]);
 
   // Update filteredPosts when context arrays change.
   useEffect(() => {
