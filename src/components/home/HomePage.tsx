@@ -28,82 +28,83 @@ const HomePage = () => {
   const fetchedPagesRef = useRef({ buy: new Set(), sell: new Set() });
 
   useEffect(() => {
-    setBuyPosts([]);
-    setSellPosts([]);
-    setPage(1);
-    setTotalPages(1);
-  }, [user]);
-
-  useEffect(() => {
     if (!user) {
       navigate("/");
       return;
     }
   }, [user, navigate]);
-
-  // When switching between buy and sell, reset pagination if no posts exist.
+  
   useEffect(() => {
-    if (buyOrSell === "buy") {
-      if (buyPosts.length === 0) {
-        fetchedPagesRef.current.buy = new Set();
-        setPage(1);
-        setTotalPages(1);
-        setInitialLoading(true);
-        setBuyPosts([]);
-        setRefreshTrigger(prev => !prev);
-      }
-    } else if (buyOrSell === "sell") {
-      if (sellPosts.length === 0) {
-        fetchedPagesRef.current.sell = new Set();
-        setPage(1);
-        setTotalPages(1);
-        setInitialLoading(true);
-        setSellPosts([]);
-        setRefreshTrigger(prev => !prev);
-      }
+    // When switching buy/sell, do NOT reset posts if they already exist
+    if (buyOrSell === "buy" && buyPosts.length === 0) {
+      fetchedPagesRef.current.buy = new Set();
+      setPage(1);
+      setTotalPages(1);
+      setInitialLoading(true);
+      setRefreshTrigger(prev => !prev);
+    } else if (buyOrSell === "sell" && sellPosts.length === 0) {
+      fetchedPagesRef.current.sell = new Set();
+      setPage(1);
+      setTotalPages(1);
+      setInitialLoading(true);
+      setRefreshTrigger(prev => !prev);
     }
   }, [buyOrSell]);
-
-  // Fetch posts when the current page or mode (buyOrSell) changes.
+  
   useEffect(() => {
     const fetchPosts = async () => {
-      // If page exceeds total pages or already fetched, do nothing.
       if (page > totalPages || fetchedPagesRef.current[buyOrSell].has(page)) {
+        console.log(`Skipping page ${page} for ${buyOrSell} (Already fetched or exceeds total pages)`);
         setInitialLoading(false);
         return;
       }
+    
       setLoading(true);
-
+      console.log(`Fetching page ${page} for ${buyOrSell}`);
+    
       try {
         const { request } = getPosts(page, 8, buyOrSell === "buy" ? null : user._id);
         const response = await request;
+    
+        console.log(`Response for page ${page}:`, response.data.posts);
+    
         setTotalPages(response.data.totalPages);
+    
         if (buyOrSell === "buy") {
-          setBuyPosts(prevPosts => [...prevPosts, ...response.data.posts]);
+          setBuyPosts(prevPosts => {
+            const updatedPosts = [...prevPosts, ...response.data.posts].filter(
+              (post, index, self) => index === self.findIndex(p => p._id === post._id)
+            );
+            return updatedPosts;
+          });
         } else {
-          setSellPosts(prevPosts => [...prevPosts, ...response.data.posts]);
+          setSellPosts(prevPosts => {
+            const updatedPosts = [...prevPosts, ...response.data.posts].filter(
+              (post, index, self) => index === self.findIndex(p => p._id === post._id)
+            );
+            return updatedPosts;
+          });
         }
-        // Mark this page as fetched.
+    
+        // ✅ **Now mark the page as fetched ONLY after success**
         fetchedPagesRef.current[buyOrSell].add(page);
+    
       } catch (error) {
-        console.error("Failed to fetch posts:", error);
+        console.error(`Failed to fetch page ${page}:`, error);
       } finally {
         setLoading(false);
         setInitialLoading(false);
       }
-    };
-
+    };    
+  
     fetchPosts();
   }, [page, refreshTrigger]);
-
-  // Update filteredPosts when context arrays change.
+  
+  // Instead of resetting, just update `filteredPosts` to match context
   useEffect(() => {
-    if (buyOrSell === "buy") {
-      setFilteredPosts(buyPosts);
-    } else if (buyOrSell === "sell") {
-      setFilteredPosts(sellPosts);
-    }
+    setFilteredPosts(buyOrSell === "buy" ? buyPosts : sellPosts);
   }, [buyOrSell, buyPosts, sellPosts]);
+  
 
   function debounce(func, wait) {
     let timeout;
