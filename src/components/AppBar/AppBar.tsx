@@ -16,39 +16,38 @@ import { authService } from "../../services/auth-service.ts";
 import { usePostContext } from "../../contexts/PostsContext.ts";
 import { useAppContext } from "../../contexts/AppContext.ts";
 
-const pages = ["Buy", "Sell", "Sustainability", "Profile"];
-const settings = ["Profile", "Logout"];
-const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
+const pages: string[] = ["Buy", "Sell", "Sustainability", "Profile"];
+const settings: string[] = ["Profile", "Logout"];
+const apiUrl: string | undefined =
+  window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
 
-function ResponsiveAppBar() {
-  const { buyOrSell, setBuyOrSell, setUser, user, setIsGoogle, setTips } = useAppContext();
+const ResponsiveAppBar: React.FC = () => {
+  const { buyOrSell, setBuyOrSell, setUser, user, setIsGoogle, setTips } =
+    useAppContext();
   const { setBuyPosts, setSellPosts } = usePostContext();
   const navigate = useNavigate();
-  const [activeTab, setActiveTab] = React.useState<string>("Buy"); // Track active tab
-  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(
-    null
-  );
-  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(
-    null
-  );
 
-  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const [activeTab, setActiveTab] = React.useState<string>("Buy"); // Track active tab
+  const [anchorElNav, setAnchorElNav] = React.useState<null | HTMLElement>(null);
+  const [anchorElUser, setAnchorElUser] = React.useState<null | HTMLElement>(null);
+
+  const handleOpenNavMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorElNav(event.currentTarget);
   };
 
-  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>) => {
+  const handleOpenUserMenu = (event: React.MouseEvent<HTMLElement>): void => {
     setAnchorElUser(event.currentTarget);
   };
 
-  const handleCloseNavMenu = () => {
+  const handleCloseNavMenu = (): void => {
     setAnchorElNav(null);
   };
 
-  const handleCloseUserMenu = () => {
+  const handleCloseUserMenu = (): void => {
     setAnchorElUser(null);
   };
 
-  const handlePageClick = (page: string) => {
+  const handlePageClick = (page: string): void => {
     setActiveTab(page); // Update the active tab
     if (page === "Profile") {
       navigate("/profile");
@@ -60,9 +59,9 @@ function ResponsiveAppBar() {
     }
   };
 
-  const handleLogout = async () => {
+  const handleLogout = async (): Promise<void> => {
     try {
-      const refreshToken = localStorage.getItem("refreshToken");
+      const refreshToken: string | null = localStorage.getItem("refreshToken");
       if (!refreshToken) throw new Error("No refresh token found");
 
       await authService.logout(refreshToken);
@@ -79,25 +78,27 @@ function ResponsiveAppBar() {
 
       // Navigate back to login
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to logout:", error.message || error);
     }
   };
 
-  const handleSetting = (setting: string) => () => {
-    switch (setting) {
-      case "Profile":
-        navigate("/profile");
-        handleCloseUserMenu();
-        break;
-      case "Logout":
-        handleLogout();
-        localStorage.removeItem("user");
-        navigate("/");
-        break;
-      default:
-        break;
-    }
+  const handleSetting = (setting: string): (() => void) => {
+    return (): void => {
+      switch (setting) {
+        case "Profile":
+          navigate("/profile");
+          handleCloseUserMenu();
+          break;
+        case "Logout":
+          handleLogout();
+          localStorage.removeItem("user");
+          navigate("/");
+          break;
+        default:
+          break;
+      }
+    };
   };
 
   return (
@@ -105,9 +106,7 @@ function ResponsiveAppBar() {
       position="static"
       sx={{ backgroundColor: "#F3E3E4", position: "fixed", zIndex: "100" }}
     >
-      <div
-        style={{ marginLeft: "15px", marginRight: "15px", maxWidth: "100%" }}
-      >
+      <div style={{ marginLeft: "15px", marginRight: "15px", maxWidth: "100%" }}>
         <Toolbar disableGutters>
           <img
             src={logo}
@@ -143,7 +142,7 @@ function ResponsiveAppBar() {
               onClose={handleCloseNavMenu}
               sx={{ display: { xs: "block", md: "none" } }}
             >
-              {pages.map((page) => (
+              {pages.map((page: string) => (
                 <MenuItem
                   key={page}
                   onClick={() => {
@@ -161,7 +160,7 @@ function ResponsiveAppBar() {
           </Box>
 
           <Box sx={{ flexGrow: 1, display: { xs: "none", md: "flex" } }}>
-            {pages.map((page) => (
+            {pages.map((page: string) => (
               <Button
                 key={page}
                 onClick={() => handlePageClick(page)}
@@ -170,9 +169,9 @@ function ResponsiveAppBar() {
                   display: "block",
                   textTransform: "none",
                   fontSize: "16px",
-                  color: activeTab === page ? "#EE297B" : "#EE297B", // Highlight selected tab
+                  color: "#EE297B", // Text color remains the same regardless of activeTab
                   backgroundColor:
-                    activeTab === page ? "#FAF58C" : "transparent", // Add background color
+                    activeTab === page ? "#FAF58C" : "transparent", // Highlight selected tab with background color
                   borderRadius: "8px", // Make it look like a tab
                   padding: "6px 12px", // Add some padding for better UX
                 }}
@@ -196,12 +195,10 @@ function ResponsiveAppBar() {
                   src={
                     user?.profilePicture?.startsWith("http")
                       ? user?.profilePicture
-                      : `${
-                        apiUrl
-                        }/${user?.profilePicture?.replace(/\\/g, "/")}`
+                      : `${apiUrl}/${user?.profilePicture?.replace(/\\/g, "/")}`
                   }
                   imgProps={{
-                    referrerPolicy: "no-referrer", // Add this to bypass CORS restrictions
+                    referrerPolicy: "no-referrer", // Bypass CORS restrictions
                   }}
                 />
               </IconButton>
@@ -223,7 +220,7 @@ function ResponsiveAppBar() {
               open={Boolean(anchorElUser)}
               onClose={handleCloseUserMenu}
             >
-              {settings.map((setting) => (
+              {settings.map((setting: string) => (
                 <MenuItem key={setting} onClick={handleSetting(setting)}>
                   <Typography>{setting}</Typography>
                 </MenuItem>

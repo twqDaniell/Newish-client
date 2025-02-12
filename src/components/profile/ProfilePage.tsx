@@ -1,34 +1,35 @@
 import React, { useEffect, useState, useRef } from "react";
-import "./ProfilePage.css";
 import { useAppContext } from "../../contexts/AppContext.ts";
+import { usePostContext } from "../../contexts/PostsContext.ts";
+import { getPosts } from "../../services/posts-service.ts";
+import { useNavigate } from "react-router-dom";
+import ProductCard from "../home/ProductCard/ProductCard.tsx";
+import { Button } from "antd";
 import PhoneIcon from "@mui/icons-material/Phone";
 import EmailIcon from "@mui/icons-material/Email";
 import EditIcon from "@mui/icons-material/Edit";
 import PostsIcon from "@mui/icons-material/PostAdd";
 import CheckIcon from "@mui/icons-material/Checklist";
 import EditProfilePopup from "./EditProfilePopup.tsx";
-import { Button } from "antd";
-import { useNavigate } from "react-router-dom";
-import ProductCard from "../home/ProductCard/ProductCard.tsx";
-import { usePostContext } from "../../contexts/PostsContext.ts";
-import { getPosts } from "../../services/posts-service.ts";
+import "./ProfilePage.css";
 
-const ProfilePage = () => {
-  const { user, loadingUser, isGoogle, setBuyOrSell } = useAppContext();
+// Import the Post type from your posts service.
+import type { Post } from "../../services/posts-service";
+
+const ProfilePage: React.FC = () => {
+  const { user, loadingUser, setBuyOrSell } = useAppContext();
   const { sellPosts, setSellPosts, sellPage, setSellPage, sellTotalPages, setSellTotalPages } = usePostContext();
-  const [openEditPopup, setOpenEditPopup] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
+  const [openEditPopup, setOpenEditPopup] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
   const navigate = useNavigate();
-
-  // Keep track of fetched pages to prevent duplicate requests
-  const fetchedPagesRef = useRef(new Set());
+  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
+  const fetchedPagesRef = useRef<Set<number>>(new Set<number>());
 
   useEffect(() => {
     setBuyOrSell("sell");
 
-    const fetchPosts = async () => {
+    const fetchPosts = async (): Promise<void> => {
       if (sellPage > sellTotalPages || fetchedPagesRef.current.has(sellPage) || !user) {
         setInitialLoading(false);
         return;
@@ -40,12 +41,12 @@ const ProfilePage = () => {
         const response = await request;
 
         setSellTotalPages(response.data.totalPages);
-        setSellPosts(prevPosts => {
+        setSellPosts((prevPosts: Post[]) => {
           return [...prevPosts, ...response.data.posts].filter(
-            (post, index, self) => index === self.findIndex(p => p._id === post._id)
+            (post, index, self) =>
+              index === self.findIndex((p: Post) => p._id === post._id)
           );
         });
-
         fetchedPagesRef.current.add(sellPage);
       } catch (error) {
         console.error("Failed to fetch sell posts:", error);
@@ -56,25 +57,24 @@ const ProfilePage = () => {
     };
 
     fetchPosts();
-  }, [sellPage, user]);
+  }, [sellPage, user, sellTotalPages, setBuyOrSell, setSellPosts, setSellTotalPages]);
 
   useEffect(() => {
     if (!loadingUser && !user) {
       navigate("/");
-      return;
     }
-  }, [loadingUser]);
+  }, [loadingUser, user, navigate]);
 
-  function handleScroll() {
+  const handleScroll = (): void => {
     if (
       window.innerHeight + document.documentElement.scrollTop >=
       document.documentElement.offsetHeight - 50 &&
       sellPage < sellTotalPages &&
       !loading
     ) {
-      setSellPage(prevPage => prevPage + 1);
+      setSellPage((prevPage: number) => prevPage + 1);
     }
-  }
+  };
 
   useEffect(() => {
     window.addEventListener("scroll", handleScroll);
@@ -142,7 +142,7 @@ const ProfilePage = () => {
             <h2>On Sale Right Now</h2>
             {sellPosts.length > 0 ? (
               <div className="productList">
-                {sellPosts.map(product => (
+                {sellPosts.map((product: Post) => (
                   <ProductCard key={product._id} product={product} />
                 ))}
               </div>
@@ -152,7 +152,9 @@ const ProfilePage = () => {
           </div>
         </div>
       )}
-      {openEditPopup && <EditProfilePopup openPopup={openEditPopup} setOpenPopup={setOpenEditPopup} />}
+      {openEditPopup && (
+        <EditProfilePopup openPopup={openEditPopup} setOpenPopup={setOpenEditPopup} />
+      )}
     </div>
   );
 };

@@ -11,7 +11,7 @@ interface ImagePopupProps {
 const ImageModal: React.FC<ImagePopupProps> = ({ title, picture, open, onClose }) => {
   if (!open) return null;
 
-  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>): void => {
     if (e.target === e.currentTarget) {
       onClose();
     }
@@ -24,7 +24,7 @@ const ImageModal: React.FC<ImagePopupProps> = ({ title, picture, open, onClose }
           &times;
         </button>
         <p className="image-popup-message">{title}</p>
-        <img width={"500px"} src={picture} alt={title} />
+        <img width="500px" src={picture} alt={title} />
       </div>
     </div>
   );

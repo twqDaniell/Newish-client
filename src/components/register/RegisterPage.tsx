@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, ChangeEvent, FormEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import "./RegisterPage.css";
 import logo from "../../assets/logo.png";
@@ -6,11 +6,11 @@ import { Button, Avatar, Box } from "@mui/material";
 import { authService } from "../../services/auth-service.ts";
 import { useAppContext } from "../../contexts/AppContext.ts";
 
-const RegisterPage = () => {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
-  const [name, setName] = useState("");
-  const [phoneNumber, setPhoneNumber] = useState("");
+const RegisterPage: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [name, setName] = useState<string>("");
+  const [phoneNumber, setPhoneNumber] = useState<string>("");
   const [profilePicture, setProfilePicture] = useState<File | null>(null);
   const [profilePicturePreview, setProfilePicturePreview] = useState<string | null>(null);
   const [touchedFields, setTouchedFields] = useState<Record<string, boolean>>({});
@@ -23,28 +23,29 @@ const RegisterPage = () => {
     }
   }, [loadingUser, user, navigate]);
 
-  const isEmailValid = (email: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  const isEmailValid = (email: string): boolean =>
+    /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 
-  const isPhoneValid = (phone: string) =>
+  const isPhoneValid = (phone: string): boolean =>
     /^05\d{8}$/.test(phone);
 
-  const isPasswordValid = (password: string) => password.length >= 6;
+  const isPasswordValid = (password: string): boolean => password.length >= 6;
 
-  const isFormValid =
+  const isFormValid: boolean =
     name.length > 0 &&
     isEmailValid(email) &&
     isPhoneValid(phoneNumber) &&
     isPasswordValid(password);
 
-  const handleProfilePictureChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  const handleProfilePictureChange = (e: ChangeEvent<HTMLInputElement>): void => {
     if (e.target.files && e.target.files[0]) {
-      const file = e.target.files[0];
+      const file: File = e.target.files[0];
       setProfilePicture(file);
       setProfilePicturePreview(URL.createObjectURL(file));
     }
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     if (!isFormValid) return;
 
@@ -59,9 +60,14 @@ const RegisterPage = () => {
       }
 
       await authService.register(formData);
-      setSnackbar({ ...snackbar, open: true, message: "Registration successful!", type: "success" });
+      setSnackbar({
+        ...snackbar,
+        open: true,
+        message: "Registration successful!",
+        type: "success",
+      });
       navigate("/");
-    } catch (error) {
+    } catch (error: any) {
       setSnackbar({
         ...snackbar,
         open: true,
@@ -71,7 +77,7 @@ const RegisterPage = () => {
     }
   };
 
-  const handleBlur = (field: string) => {
+  const handleBlur = (field: string): void => {
     setTouchedFields((prev) => ({ ...prev, [field]: true }));
   };
 

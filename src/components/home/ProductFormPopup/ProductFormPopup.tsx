@@ -17,7 +17,7 @@ const ProductFormPopup = ({
   postToEdit: Post;
 }) => {
   const { setSellPosts } = usePostContext();
-  const { setSnackbar, user } = useAppContext();
+  const { setSnackbar, user, setUser } = useAppContext();
   const [picture, setPicture] = useState<File | null>(null);
   const [picturePreview, setPicturePreview] = useState<string | null>(null);
   const [name, setName] = useState("");
@@ -149,6 +149,8 @@ const ProductFormPopup = ({
           },
         },
       ]);
+
+      setUser((prevUser) => ({ ...prevUser, postsCount: prevUser.postsCount + 1 }));
 
       handleClose();
       setSnackbar({

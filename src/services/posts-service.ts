@@ -21,6 +21,7 @@ export interface Post {
   likes: string[];
   timesWorn: string;
   createdAt: string;
+  commentCount: number;
 }
 
 export const getPosts = (page: number = 1, limit: number = 10, sender: string | null = null) => {

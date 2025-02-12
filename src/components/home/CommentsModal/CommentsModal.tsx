@@ -1,11 +1,8 @@
 import React, { useState, useEffect } from "react";
 import "./CommentsModal.css";
-import { Post } from "../../../services/posts-service.ts";
-import {
-  createComment,
-  getCommentsByPostId,
-} from "../../../services/comments-service.ts";
-import { Comment } from "../../../services/comments-service.ts";
+import type { Post } from "../../../services/posts-service.ts";
+import { createComment, getCommentsByPostId } from "../../../services/comments-service.ts";
+import type { Comment } from "../../../services/comments-service.ts";
 import { useAppContext } from "../../../contexts/AppContext.ts";
 import { IconButton, Typography } from "@mui/material";
 import FavoriteIcon from "@mui/icons-material/Favorite";
@@ -18,22 +15,19 @@ interface CommentsModalProps {
   post: Post;
 }
 
-const CommentsModal: React.FC<CommentsModalProps> = ({
-  open,
-  onClose,
-  post,
-}) => {
-  const [newComment, setNewComment] = useState("");
+const CommentsModal: React.FC<CommentsModalProps> = ({ open, onClose, post }) => {
+  const [newComment, setNewComment] = useState<string>("");
   const [comments, setComments] = useState<Comment[]>([]);
   const { setSnackbar, user } = useAppContext();
   const { setBuyPosts, setSellPosts } = usePostContext();
-  const apiUrl = window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
+  const apiUrl: string | undefined =
+    window.ENV?.BASE_PHOTO_URL || process.env.REACT_APP_BASE_PHOTO_URL;
 
   useEffect(() => {
     if (open) {
-      const fetchComments = async () => {
+      const fetchComments = async (): Promise<void> => {
         try {
-          const fetchedComments = await getCommentsByPostId(post._id);
+          const fetchedComments: Comment[] = await getCommentsByPostId(post._id);
           setComments(fetchedComments);
         } catch (error) {
           console.error("Failed to fetch comments:", error);
@@ -44,11 +38,11 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     }
   }, [open, post._id]);
 
-  const handleAddComment = async () => {
+  const handleAddComment = async (): Promise<void> => {
     if (!newComment.trim()) return;
 
     try {
-      const comment = await createComment(
+      const comment: Comment = await createComment(
         post._id,
         newComment.trim(),
         user._id
@@ -65,13 +59,26 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
           },
         },
       ]);
+
+      // Update the global posts state to reflect the new comment count
+      setSellPosts((prevPosts) =>
+        prevPosts.map((p) =>
+          p._id === post._id ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
+        )
+      );
+      setBuyPosts((prevPosts) =>
+        prevPosts.map((p) =>
+          p._id === post._id ? { ...p, commentCount: (p.commentCount || 0) + 1 } : p
+        )
+      );
+
       setSnackbar({
         message: "Comment added successfully",
         type: "success",
         open: true,
       });
       setNewComment("");
-    } catch (error) {
+    } catch (error: any) {
       setSnackbar({
         message: "Failed adding comment",
         type: "error",
@@ -80,57 +87,37 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
     }
   };
 
-  const handleLike = async (postId) => {
+  const handleLike = async (postId: string): Promise<void> => {
     if (!user) {
       alert("You need to be logged in to like a post.");
       return;
     }
 
     try {
-      const response = await likePost(postId, user._id);
+      await likePost(postId, user._id);
       setBuyPosts((prevPosts) =>
-        prevPosts.map((post) => {
-          if (post._id === postId) {
+        prevPosts.map((postItem) => {
+          if (postItem._id === postId) {
             const hasLiked =
-              post.likes.findIndex((like) => like === user._id) !== -1;
-
-            if (hasLiked) {
-              return {
-                ...post,
-                likes: post.likes.filter((like) => like !== user._id),
-              };
-            } else {
-              return {
-                ...post,
-                likes: [...post.likes, user._id],
-              };
-            }
+              postItem.likes.findIndex((like) => like === user._id) !== -1;
+            return hasLiked
+              ? { ...postItem, likes: postItem.likes.filter((like) => like !== user._id) }
+              : { ...postItem, likes: [...postItem.likes, user._id] };
           }
-
-          return post;
+          return postItem;
         })
       );
 
       setSellPosts((prevPosts) =>
-        prevPosts.map((post) => {
-          if (post._id === postId) {
+        prevPosts.map((postItem) => {
+          if (postItem._id === postId) {
             const hasLiked =
-              post.likes.findIndex((like) => like === user._id) !== -1;
-
-            if (hasLiked) {
-              return {
-                ...post,
-                likes: post.likes.filter((like) => like !== user._id),
-              };
-            } else {
-              return {
-                ...post,
-                likes: [...post.likes, user._id],
-              };
-            }
+              postItem.likes.findIndex((like) => like === user._id) !== -1;
+            return hasLiked
+              ? { ...postItem, likes: postItem.likes.filter((like) => like !== user._id) }
+              : { ...postItem, likes: [...postItem.likes, user._id] };
           }
-
-          return post;
+          return postItem;
         })
       );
     } catch (err) {
@@ -154,9 +141,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
           {/* Post Details Section */}
           <div className="comments-modal-left">
             <img
-              src={`${
-                apiUrl
-              }/${post.picture.replace(/\\/g, "/")}`}
+              src={`${apiUrl}/${post.picture.replace(/\\/g, "/")}`}
               alt={post.title}
               className="comments-modal-post-image"
             />
@@ -181,7 +166,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                       <img
                         src={
                           comment.user?.profilePicture.startsWith("http")
-                            ? comment.user?.profilePicture
+                            ? comment.user.profilePicture
                             : `${apiUrl}/${comment.user.profilePicture}`
                         }
                         alt={`${comment.user.username}'s profile`}
@@ -210,7 +195,9 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
             <div className="comments-modal-add-comment">
               <textarea
                 value={newComment}
-                onChange={(e) => setNewComment(e.target.value)}
+                onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) =>
+                  setNewComment(e.target.value)
+                }
                 placeholder="Add a comment..."
                 className="comments-modal-comment-input"
               ></textarea>
@@ -223,7 +210,7 @@ const CommentsModal: React.FC<CommentsModalProps> = ({
                     aria-label="add to favorites"
                     onClick={() => handleLike(post._id)}
                   >
-                    {post.likes?.findIndex((like) => like == user._id) == -1 ? (
+                    {post.likes?.findIndex((like) => like === user._id) === -1 ? (
                       <FavoriteIcon />
                     ) : (
                       <FavoriteIcon style={{ color: "#EE297B" }} />

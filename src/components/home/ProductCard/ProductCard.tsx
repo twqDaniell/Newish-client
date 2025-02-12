@@ -158,6 +158,7 @@ export default function ProductCard({ product }) {
       setSellPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== product._id)
       );
+      setUser((prevUser) => ({ ...prevUser, postsCount: prevUser.postsCount - 1 }));
 
       setSnackbar({
         open: true,
@@ -189,6 +190,7 @@ export default function ProductCard({ product }) {
       setSellPosts((prevPosts) =>
         prevPosts.filter((post) => post._id !== product._id)
       );
+      setUser((prevUser) => ({ ...prevUser, postsCount: prevUser.postsCount - 1 }));
 
       await userService.sellProduct(user._id);
       setUser((prevUser) => ({ ...prevUser, soldCount: prevUser.soldCount + 1 }));

@@ -9,28 +9,32 @@ import { useNavigate } from "react-router-dom";
 import { useAppContext } from "../../contexts/AppContext.ts";
 import { getPosts } from "../../services/posts-service.ts";
 import { usePostContext } from "../../contexts/PostsContext.ts";
-import IconButton from "@mui/material/IconButton";
 import RefreshIcon from "@mui/icons-material/Refresh";
 
-const HomePage = () => {
+interface Post {
+  _id: string;
+  [key: string]: any;
+}
+
+const HomePage: React.FC = () => {
   const { buyOrSell, user } = useAppContext();
   const navigate = useNavigate();
   const { buyPosts, setBuyPosts, sellPosts, setSellPosts, sellPage, setSellPage } = usePostContext();
 
-  const [filteredPosts, setFilteredPosts] = useState([]);
-  const [popupOpen, setPopupOpen] = useState(false);
-  const [loading, setLoading] = useState(false);
-  const [initialLoading, setInitialLoading] = useState(true);
-  const [refreshTrigger, setRefreshTrigger] = useState(false);
+  const [filteredPosts, setFilteredPosts] = useState<Post[]>([]);
+  const [popupOpen, setPopupOpen] = useState<boolean>(false);
+  const [loading, setLoading] = useState<boolean>(false);
+  const [initialLoading, setInitialLoading] = useState<boolean>(true);
+  const [refreshTrigger, setRefreshTrigger] = useState<boolean>(false);
 
   // Separate pagination states for buy and sell
-  const [buyPage, setBuyPage] = useState(1);
-  const [buyTotalPages, setBuyTotalPages] = useState(1);
-  const [sellTotalPages, setSellTotalPages] = useState(1);
+  const [buyPage, setBuyPage] = useState<number>(1);
+  const [buyTotalPages, setBuyTotalPages] = useState<number>(1);
+  const [sellTotalPages, setSellTotalPages] = useState<number>(1);
 
   // Track which pages have been fetched for buy/sell
-  const fetchedPagesRef = useRef({ buy: new Set(), sell: new Set() });
-  const buyOrSellRef = useRef(buyOrSell);
+  const fetchedPagesRef = useRef<{ buy: Set<number>; sell: Set<number> }>({ buy: new Set(), sell: new Set() });
+  const buyOrSellRef = useRef<string>(buyOrSell);
 
   useEffect(() => {
     if (!user) {
@@ -41,17 +45,13 @@ const HomePage = () => {
 
   useEffect(() => {
     if (buyOrSell === "buy" && buyPosts.length === 0) {
-      fetchedPagesRef.current.buy = new Set();
+      fetchedPagesRef.current.buy.clear();
       buyOrSellRef.current = "buy";
-      // setBuyPage(1);
-      // setBuyTotalPages(1);
       setInitialLoading(true);
       setRefreshTrigger(prev => !prev);
     } else if (buyOrSell === "sell" && sellPosts.length === 0) {
-      fetchedPagesRef.current.sell = new Set();
+      fetchedPagesRef.current.sell.clear();
       buyOrSellRef.current = "sell";
-      // setSellPage(1);
-      // setSellTotalPages(1);
       setInitialLoading(true);
       setRefreshTrigger(prev => !prev);
     }
@@ -109,25 +109,22 @@ const HomePage = () => {
     setFilteredPosts(buyOrSell === "buy" ? buyPosts : sellPosts);
   }, [buyOrSell, buyPosts, sellPosts]);
 
-  function debounce(func, wait) {
-    let timeout;
-    return (...args) => {
+  function debounce<T extends (...args: any[]) => void>(func: T, wait: number): (...args: Parameters<T>) => void {
+    let timeout: NodeJS.Timeout;
+    return (...args: Parameters<T>) => {
       clearTimeout(timeout);
-      timeout = setTimeout(() => func.apply(null, args), wait);
+      timeout = setTimeout(() => func(...args), wait);
     };
   }
 
   useEffect(() => {
     const handleScroll = debounce(() => {
-      console.log("Current buyOrSell inside handleScroll:", buyOrSell); // 🔹 Debugging Log
-  
+      console.log("Current buyOrSell inside handleScroll:", buyOrSell);
+
       const currentPage = buyOrSell === "buy" ? buyPage : sellPage;
       const totalPages = buyOrSell === "buy" ? buyTotalPages : sellTotalPages;
-  
-      if (
-        window.innerHeight + document.documentElement.scrollTop >=
-        document.documentElement.offsetHeight - 50
-      ) {
+
+      if (window.innerHeight + document.documentElement.scrollTop >= document.documentElement.offsetHeight - 50) {
         if (currentPage < totalPages && !loading) {
           if (buyOrSell === "buy") {
             setBuyPage(prevPage => prevPage + 1);
@@ -137,22 +134,14 @@ const HomePage = () => {
         }
       }
     }, 300);
-  
-    // ✅ Remove old listener (ensures latest buyOrSell is used)
+
     window.removeEventListener("scroll", handleScroll);
     window.addEventListener("scroll", handleScroll);
-  
-    // ✅ Cleanup function to remove listener when component unmounts or `buyOrSell` changes
+
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, [buyOrSell, buyPage, sellPage, buyTotalPages, sellTotalPages, loading]);
-  
-
-  // useEffect(() => {
-  //   window.addEventListener("scroll", handleScroll);
-  //   return () => window.removeEventListener("scroll", handleScroll);
-  // }, [buyPage, sellPage, buyTotalPages, sellTotalPages, loading]);
 
   const handleOpenPopup = () => {
     setPopupOpen(true);
@@ -167,12 +156,12 @@ const HomePage = () => {
       setBuyPage(1);
       setBuyTotalPages(1);
       setBuyPosts([]);
-      fetchedPagesRef.current.buy = new Set();
+      fetchedPagesRef.current.buy.clear();
     } else {
       setSellPage(1);
       setSellTotalPages(1);
       setSellPosts([]);
-      fetchedPagesRef.current.sell = new Set();
+      fetchedPagesRef.current.sell.clear();
     }
     setRefreshTrigger(prev => !prev);
     setInitialLoading(true);
@@ -189,9 +178,7 @@ const HomePage = () => {
   return (
     <div className="container">
       {filteredPosts.length > 0 ? (
-        filteredPosts.map((product, index) => (
-          <ProductCard key={index} product={product} />
-        ))
+        filteredPosts.map((product) => <ProductCard key={product._id} product={product} />)
       ) : (
         <h2>Nothing on sale yet</h2>
       )}

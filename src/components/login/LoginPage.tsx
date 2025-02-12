@@ -1,30 +1,42 @@
-import React, { use, useState, useEffect } from "react";
+import React, { useState, useEffect, FormEvent, MouseEvent, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import "./LoginPage.css";
 import loginIllustration from "../assets/login_illustration.png";
 import logo from "../../assets/logo.png";
 import FacebookIcon from "@mui/icons-material/Facebook";
 import GoogleIcon from "@mui/icons-material/Google";
-import { Button, Box } from "@mui/material";
+import { Button, Box, Snackbar, Alert } from "@mui/material";
 import { authService } from "../../services/auth-service.ts";
-import { Snackbar, Alert } from "@mui/material";
 import User, { useAppContext } from "../../contexts/AppContext.ts";
+interface AuthResponse {
+  _id: string;
+  username: string;
+  email: string;
+  phoneNumber: string;
+  profilePicture: string;
+  soldCount: number;
+  postsCount: number;
+  accessToken: string;
+  refreshToken: string;
+}
 
-const LoginPage = () => {
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
-  const [emailTouched, setEmailTouched] = React.useState(false);
-  const { snackbar, setSnackbar } = useAppContext();
-  const { user, setUser, loadingUser } = useAppContext();
-  const apiUrl = window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
+const LoginPage: React.FC = () => {
+  const [email, setEmail] = useState<string>("");
+  const [password, setPassword] = useState<string>("");
+  const [emailTouched, setEmailTouched] = useState<boolean>(false);
+  
+  // Assuming the context returns the proper types for snackbar, user, etc.
+  const { snackbar, setSnackbar, user, setUser, loadingUser } = useAppContext();
+  const apiUrl: string | undefined =
+    window.ENV?.BASE_API_URL || process.env.REACT_APP_BASE_API_URL;
   const navigate = useNavigate();
 
-  const isEmailValid = (email) => {
+  const isEmailValid = (email: string): boolean => {
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     return emailRegex.test(email);
   };
 
-  const isFormValid = email && password && isEmailValid(email);
+  const isFormValid: boolean = Boolean(email && password && isEmailValid(email));
 
   useEffect(() => {
     if (!loadingUser && user) {
@@ -32,10 +44,12 @@ const LoginPage = () => {
     }
   }, [loadingUser, user, navigate]);
 
-  const handleLogin = async (event) => {
+  const handleLogin = async (
+    event: FormEvent<HTMLFormElement> | MouseEvent<HTMLButtonElement>
+  ): Promise<void> => {
+    event.preventDefault();
     try {
-      event.preventDefault();
-      const response = await authService.login({ email, password });
+      const response: AuthResponse = await authService.login({ email, password });
       setUser({
         _id: response._id,
         username: response.username,
@@ -49,20 +63,19 @@ const LoginPage = () => {
       localStorage.setItem("accessToken", response.accessToken);
       localStorage.setItem("refreshToken", response.refreshToken);
       navigate("/home");
-    } catch (error) {
+    } catch (error: any) {
       setSnackbar({
         ...snackbar,
         open: true,
-        message: "Login failed: " + error.response?.data || error.message,
+        message: "Login failed: " + (error.response?.data || error.message),
         type: "error",
       });
     }
   };
 
-  const handleGoogleLogin = async () => {
+  const handleGoogleLogin = async (): Promise<void> => {
     console.log("env", process.env);
     console.log("window.env", window.ENV);
-    
     console.log(`${apiUrl}/auth/google`);
     window.location.href = `${apiUrl}/auth/google`;
   };
@@ -93,8 +106,8 @@ const LoginPage = () => {
             type="email"
             placeholder="Enter your email address"
             value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onBlur={() => setEmailTouched(true)} // Mark email as touched on blur
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
+            onBlur={() => setEmailTouched(true)}
           />
 
           <label>Password</label>
@@ -102,15 +115,13 @@ const LoginPage = () => {
             type="password"
             placeholder="Enter your password"
             value={password}
-            onChange={(e) => setPassword(e.target.value)}
+            onChange={(e: ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
           />
 
           <div className="error-container">
-              <span className="error-message-login">{emailTouched && !isEmailValid(email) &&"Invalid email address"}</span>
-          </div>
-
-          <div className="forgotPassword">
-            <a href="#">Forgot Password?</a>
+            <span className="error-message-login">
+              {emailTouched && !isEmailValid(email) && "Invalid email address"}
+            </span>
           </div>
 
           <button
