@@ -34,7 +34,7 @@ import { userService } from "../../../services/users-service.ts";
 import CircularProgress from "@mui/material/CircularProgress";
 
 export default function ProductCard({ product }) {
-  const { user, buyOrSell, setSnackbar } = useAppContext();
+  const { user, buyOrSell, setSnackbar, setUser } = useAppContext();
   const { setBuyPosts, setSellPosts } = usePostContext();
   const [anchorEl, setAnchorEl] = useState<null | HTMLElement>(null);
   const [confirmOpen, setConfirmOpen] = useState(false);
@@ -191,6 +191,8 @@ export default function ProductCard({ product }) {
       );
 
       await userService.sellProduct(user._id);
+      setUser((prevUser) => ({ ...prevUser, soldCount: prevUser.soldCount + 1 }));
+
       setSnackbar({
         open: true,
         type: "success",
