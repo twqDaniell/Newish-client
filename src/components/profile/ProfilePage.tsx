@@ -30,6 +30,7 @@ const ProfilePage = () => {
 
     const fetchPosts = async () => {
       if (sellPage > sellTotalPages || fetchedPagesRef.current.has(sellPage) || !user) {
+        setInitialLoading(false);
         return;
       }
 
