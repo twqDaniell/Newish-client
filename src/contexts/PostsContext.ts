@@ -7,6 +7,10 @@ interface PostContextInterface {
   setBuyPosts: React.Dispatch<React.SetStateAction<Post[]>>;
   sellPosts: Post[];
   setSellPosts: React.Dispatch<React.SetStateAction<Post[]>>;
+  sellPage: number;
+  setSellPage: React.Dispatch<React.SetStateAction<number>>;
+  sellTotalPages: number;
+  setSellTotalPages: React.Dispatch<React.SetStateAction<number>>;
 }
 
 // Create the context with a default value of undefined
@@ -30,12 +34,18 @@ interface PostProviderProps {
 const PostProvider: React.FC<PostProviderProps> = ({ children }) => {
   const [buyPosts, setBuyPosts] = useState<Post[]>([]);
   const [sellPosts, setSellPosts] = useState<Post[]>([]);
+  const [sellPage, setSellPage] = useState(1);
+  const [sellTotalPages, setSellTotalPages] = useState(1);
   
   const value: PostContextInterface = {
     buyPosts,
     setBuyPosts,
     sellPosts,
-    setSellPosts
+    setSellPosts,
+    sellPage,
+    setSellPage,
+    sellTotalPages,
+    setSellTotalPages
   };
 
   return React.createElement(PostContext.Provider, { value }, children);
